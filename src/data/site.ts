@@ -32,6 +32,7 @@ export const navLinks: NavLink[] = [
   { label: "Campaigns", href: "/campaigns" },
   { label: "Impact", href: "/impact" },
   { label: "Zakat", href: "/zakat" },
+  { label: "Khardal Hasana", href: "/khardal-hasana" },
   { label: "News", href: "/news" },
   { label: "Events", href: "/events" },
   { label: "Membership", href: "/membership" },
