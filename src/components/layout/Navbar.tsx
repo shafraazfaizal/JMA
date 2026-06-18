@@ -40,7 +40,7 @@ export default function Navbar() {
         <motion.header
           animate={{
             backgroundColor: scrolled
-              ? "rgba(7, 61, 71, 0.82)"
+              ? "rgba(7, 61, 71, 0.92)"
               : "rgba(13, 92, 107, 0.18)",
             borderColor: scrolled
               ? "rgba(255,255,255,0.12)"
@@ -54,10 +54,10 @@ export default function Navbar() {
             WebkitBackdropFilter: "blur(24px) saturate(180%)",
             boxShadow:
               "0 4px 32px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.1)",
-            height: "62px",
+            height: "68px",
             display: "flex",
             alignItems: "center",
-            padding: "0 1rem 0 1.125rem",
+            padding: "0 1.25rem",
             justifyContent: "space-between",
             gap: "1rem",
           }}
@@ -73,12 +73,16 @@ export default function Navbar() {
             }}
           >
             <Image
-              src="/logo/logo.svg"
+              src="/logo/logo-white.svg"
               alt="Jaffna Muslim Association"
-              width={117}
-              height={36}
+              width={220}
+              height={56}
               priority
-              style={{ display: "block" }}
+              style={{
+                display: "block",
+                height: "44px",
+                width: "auto",
+              }}
             />
           </Link>
 
@@ -188,7 +192,7 @@ export default function Navbar() {
         </motion.header>
       </div>
 
-      {/* Mobile dropdown — left/right anchored to viewport edges with margin */}
+      {/* Mobile dropdown */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -198,7 +202,7 @@ export default function Navbar() {
             transition={{ duration: 0.2, ease: "easeOut" }}
             style={{
               position: "fixed",
-              top: "5.125rem",
+              top: "5.375rem",
               left: "1.25rem",
               right: "1.25rem",
               zIndex: 49,
@@ -211,9 +215,25 @@ export default function Navbar() {
               overflow: "hidden",
             }}
           >
+            {/* Mobile logo */}
+            <div
+              style={{
+                padding: "1.125rem 1.25rem 0.75rem",
+                borderBottom: "1px solid rgba(255,255,255,0.07)",
+              }}
+            >
+              <Image
+                src="/logo/logo-white.svg"
+                alt="Jaffna Muslim Association"
+                width={180}
+                height={46}
+                style={{ height: "36px", width: "auto" }}
+              />
+            </div>
+
             <nav
               aria-label="Mobile navigation"
-              style={{ padding: "0.875rem 1.25rem" }}
+              style={{ padding: "0.5rem 1.25rem 0.875rem" }}
             >
               {navLinks.map((link) => (
                 <Link

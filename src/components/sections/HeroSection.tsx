@@ -69,41 +69,10 @@ export default function HeroSection() {
                         zIndex: 2,
                         maxWidth: "80rem",
                         margin: "0 auto",
-                        padding: "8rem 1.5rem 10rem",
+                        padding: "5rem 1.5rem 10rem",
                         width: "100%",
                     }}
                 >
-                    {/* Eyebrow badge */}
-                    <div style={{ marginBottom: "1.5rem" }}>
-                        <span
-                            style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: "0.5rem",
-                                border: "1px solid rgba(201,168,76,0.5)",
-                                borderRadius: "0.375rem",
-                                padding: "0.375rem 0.875rem",
-                                fontFamily: "var(--font-inter)",
-                                fontSize: "0.75rem",
-                                fontWeight: 600,
-                                letterSpacing: "0.08em",
-                                textTransform: "uppercase" as const,
-                                color: "#C9A84C",
-                            }}
-                        >
-                            <span
-                                style={{
-                                    width: "6px",
-                                    height: "6px",
-                                    borderRadius: "50%",
-                                    backgroundColor: "#C9A84C",
-                                    flexShrink: 0,
-                                }}
-                            />
-                            UK Registered Charity · Since 2002
-                        </span>
-                    </div>
-
                     {/* H1 */}
                     <h1
                         style={{

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Globe, MessageSquareShare, Send, Heart } from "lucide-react";
 import { siteConfig } from "@/data/site";
 
@@ -69,44 +70,42 @@ export default function Footer() {
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "0.625rem",
                 textDecoration: "none",
-                marginBottom: "1.25rem",
+                marginBottom: "1.5rem",
               }}
             >
-              <div
+              <Image
+                src="/logo/logo-white.svg"
+                alt="Jaffna Muslim Association"
+                width={200}
+                height={52}
                 style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "50%",
-                  border: "2px solid rgba(201, 168, 76, 0.7)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "rgba(201, 168, 76, 0.1)",
-                  flexShrink: 0,
+                  display: "block",
+                  height: "48px",
+                  width: "auto",
                 }}
-              >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                  <path d="M10 3C7.5 3 5.5 5 5.5 7.5C5.5 10 7.5 12 10 12C8.2 12 6.5 11 6.5 8.5C6.5 7 7.5 5.5 9 5C8.5 5 10 3 10 3Z" fill="#C9A84C" />
-                  <path d="M13 8L13.5 9.5L15 9L13.8 10L14.3 11.5L13 10.5L11.7 11.5L12.2 10L11 9L12.5 9.5L13 8Z" fill="#C9A84C" />
-                </svg>
-              </div>
-              <div>
-                <div style={{ fontFamily: "var(--font-jakarta)", fontWeight: 800, fontSize: "1rem", color: "#ffffff" }}>
-                  JMA
-                </div>
-                <div style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.6)", letterSpacing: "0.02em" }}>
-                  Jaffna Muslim Association
-                </div>
-              </div>
+              />
             </Link>
 
-            <p style={{ fontSize: "0.875rem", lineHeight: 1.7, marginBottom: "1rem", color: "rgba(255,255,255,0.65)" }}>
-              Serving the Jaffna Muslim community across two nations — bridging the UK diaspora with families on the ground.
+            <p
+              style={{
+                fontSize: "0.875rem",
+                lineHeight: 1.7,
+                marginBottom: "1rem",
+                color: "rgba(255,255,255,0.65)",
+              }}
+            >
+              Serving the Jaffna Muslim community across two nations — bridging
+              the UK diaspora with families on the ground.
             </p>
 
-            <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.45)", marginBottom: "1.5rem" }}>
+            <p
+              style={{
+                fontSize: "0.75rem",
+                color: "rgba(255,255,255,0.45)",
+                marginBottom: "1.5rem",
+              }}
+            >
               UK Registered Charity No. {siteConfig.charityNumber}
             </p>
 
@@ -135,12 +134,16 @@ export default function Footer() {
                     transition: "background 0.2s ease, color 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.background = "rgba(201,168,76,0.2)";
-                    (e.currentTarget as HTMLAnchorElement).style.color = "#C9A84C";
+                    (e.currentTarget as HTMLAnchorElement).style.background =
+                      "rgba(201,168,76,0.2)";
+                    (e.currentTarget as HTMLAnchorElement).style.color =
+                      "#C9A84C";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.07)";
-                    (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.6)";
+                    (e.currentTarget as HTMLAnchorElement).style.background =
+                      "rgba(255,255,255,0.07)";
+                    (e.currentTarget as HTMLAnchorElement).style.color =
+                      "rgba(255,255,255,0.6)";
                   }}
                 >
                   <Icon size={16} />
@@ -165,7 +168,16 @@ export default function Footer() {
               >
                 {col.label}
               </h3>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+              <ul
+                style={{
+                  listStyle: "none",
+                  padding: 0,
+                  margin: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.625rem",
+                }}
+              >
                 {col.links.map((link) => (
                   <li key={link.href}>
                     <Link
@@ -176,8 +188,14 @@ export default function Footer() {
                         textDecoration: "none",
                         transition: "color 0.15s ease",
                       }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#C9A84C"; }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.65)"; }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLAnchorElement).style.color =
+                          "#C9A84C";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLAnchorElement).style.color =
+                          "rgba(255,255,255,0.65)";
+                      }}
                     >
                       {link.label}
                     </Link>
@@ -217,10 +235,24 @@ export default function Footer() {
                 { label: "Account No.", value: siteConfig.bankDetails.accountNumber },
               ].map(({ label, value }) => (
                 <div key={label} style={{ marginBottom: "0.625rem" }}>
-                  <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.4)", marginBottom: "0.125rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  <div
+                    style={{
+                      fontSize: "0.7rem",
+                      color: "rgba(255,255,255,0.4)",
+                      marginBottom: "0.125rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
                     {label}
                   </div>
-                  <div style={{ fontSize: "0.875rem", color: "#ffffff", fontWeight: 500 }}>
+                  <div
+                    style={{
+                      fontSize: "0.875rem",
+                      color: "#ffffff",
+                      fontWeight: 500,
+                    }}
+                  >
                     {value}
                   </div>
                 </div>
@@ -251,9 +283,12 @@ export default function Footer() {
           }}
         >
           <span>
-            © {new Date().getFullYear()} Jaffna Muslim Association. All rights reserved.
+            © {new Date().getFullYear()} Jaffna Muslim Association. All rights
+            reserved.
           </span>
-          <span style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
+          <span
+            style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}
+          >
             Made with{" "}
             <Heart
               size={12}
