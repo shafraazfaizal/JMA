@@ -334,7 +334,7 @@ export default function CampaignsPage() {
             <section
                 style={{
                     backgroundColor: "#0D5C6B",
-                    padding: "5rem 1.5rem 4rem",
+                    padding: "8rem 1.5rem 4rem",
                     position: "relative",
                     overflow: "hidden",
                 }}
@@ -418,10 +418,6 @@ export default function CampaignsPage() {
                     backgroundColor: "#ffffff",
                     borderBottom: "1px solid #E5E7EB",
                     padding: "1.25rem 1.5rem",
-                    position: "sticky",
-                    top: "62px",
-                    zIndex: 40,
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                 }}
             >
                 <div
