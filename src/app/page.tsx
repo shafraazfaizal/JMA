@@ -6,6 +6,9 @@ import AboutSection from "@/components/sections/AboutSection";
 import ImpactSection from "@/components/sections/ImpactSection";
 import DonorWall from "@/components/sections/DonorWall";
 import ZakatSection from "@/components/sections/ZakatSection";
+import StoriesSection from "@/components/sections/StoriesSection";
+import NewsEventsSection from "@/components/sections/NewsEventsSection";
+import NewsletterStrip from "@/components/sections/NewsletterStrip";
 
 export default function HomePage() {
   return (
@@ -19,6 +22,9 @@ export default function HomePage() {
       <ImpactSection />
       <DonorWall />
       <ZakatSection />
+      <StoriesSection />
+      <NewsEventsSection />
+      <NewsletterStrip />
     </main>
   );
 }
