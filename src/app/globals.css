@@ -1,0 +1,286 @@
+@import "tailwindcss";
+
+/* ============================================
+   JMA DESIGN SYSTEM — Tailwind v4 CSS Config
+   Jaffna Muslim Association | SKAYL Studio
+   ============================================ */
+
+@theme {
+  /* Brand Colours */
+  --color-teal-50:  #E8F4F6;
+  --color-teal-100: #C8E5EA;
+  --color-teal-200: #A0CDD5;
+  --color-teal-300: #6BAFC0;
+  --color-teal-400: #3990A6;
+  --color-teal-500: #0D5C6B;
+  --color-teal-600: #094955;
+  --color-teal-700: #073D47;
+  --color-teal-800: #052F37;
+  --color-teal-900: #031F25;
+  --color-teal-950: #0a3d47;
+
+  --color-gold-50:  #FAF5E8;
+  --color-gold-100: #F4E8C4;
+  --color-gold-200: #EDD89A;
+  --color-gold-300: #E4C56A;
+  --color-gold-400: #C9A84C;
+  --color-gold-500: #B08D35;
+  --color-gold-600: #8F7026;
+  --color-gold-700: #6D551A;
+
+  /* Neutral */
+  --color-neutral-50:  #F9FAFB;
+  --color-neutral-100: #F3F4F6;
+  --color-neutral-200: #E5E7EB;
+  --color-neutral-300: #D1D5DB;
+  --color-neutral-400: #9CA3AF;
+  --color-neutral-500: #6B7280;
+  --color-neutral-600: #4B5563;
+  --color-neutral-700: #374151;
+  --color-neutral-800: #1F2937;
+  --color-neutral-900: #111827;
+
+  /* Typography */
+  --font-jakarta: "Plus Jakarta Sans", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-noto: "Noto Serif Display", serif;
+
+  /* Spacing */
+  --spacing-section: 5rem;
+
+  /* Border Radius */
+  --radius-card: 1rem;
+  --radius-btn: 0.5rem;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-card-hover: 0 10px 25px -5px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+  --shadow-nav: 0 1px 3px 0 rgb(0 0 0 / 0.15);
+}
+
+/* ============================================
+   GLOBAL BASE STYLES
+   ============================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-inter);
+  color: var(--color-neutral-800);
+  background-color: #ffffff;
+  line-height: 1.6;
+}
+
+/* Typography defaults */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-jakarta);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-neutral-900);
+}
+
+/* Focus visible — accessible */
+:focus-visible {
+  outline: 2px solid var(--color-teal-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Selection colour */
+::selection {
+  background-color: var(--color-teal-100);
+  color: var(--color-teal-700);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.font-jakarta { font-family: var(--font-jakarta); }
+.font-inter   { font-family: var(--font-inter); }
+.font-noto    { font-family: var(--font-noto); }
+
+/* Section padding */
+.section-padding {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+/* Max content width */
+.container-jma {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Eyebrow label style */
+.eyebrow {
+  font-family: var(--font-inter);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Gold accent rule */
+.gold-rule::after {
+  content: '';
+  display: block;
+  width: 2.5rem;
+  height: 3px;
+  background-color: var(--color-gold-400);
+  margin-top: 0.75rem;
+  border-radius: 2px;
+}
+
+/* ============================================
+   BUTTON BASE STYLES
+   ============================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  border-radius: 0.5rem;
+  font-family: var(--font-inter);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background-color: var(--color-gold-400);
+  color: #ffffff;
+  border-color: var(--color-gold-400);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-gold-500);
+  border-color: var(--color-gold-500);
+}
+
+.btn-teal {
+  background-color: var(--color-teal-500);
+  color: #ffffff;
+  border-color: var(--color-teal-500);
+}
+
+.btn-teal:hover {
+  background-color: var(--color-teal-600);
+  border-color: var(--color-teal-600);
+}
+
+.btn-outline-white {
+  background-color: transparent;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-outline-white:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: #ffffff;
+}
+
+/* ============================================
+   CARD BASE STYLES
+   ============================================ */
+
+.card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid var(--color-neutral-200);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   PROGRESS BAR
+   ============================================ */
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background-color: var(--color-teal-50);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--color-gold-400);
+  border-radius: 9999px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   CATEGORY PILLS
+   ============================================ */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.pill-teal {
+  background-color: var(--color-teal-50);
+  color: var(--color-teal-600);
+}
+
+.pill-gold {
+  background-color: var(--color-gold-50);
+  color: var(--color-gold-600);
+}
+
+.pill-urgent {
+  background-color: #FEF2F2;
+  color: #DC2626;
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-neutral-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-teal-300);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-teal-500);
+}
