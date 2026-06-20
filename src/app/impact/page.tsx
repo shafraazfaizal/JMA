@@ -7,6 +7,7 @@ import {
     PoundSterling, Users, FolderOpen, Heart,
     GraduationCap, Stethoscope, Building2,
     Droplets, Baby, AlertTriangle,
+    Image as ImageIcon,
 } from "lucide-react";
 import CountUp from "@/components/ui/CountUp";
 
@@ -561,6 +562,74 @@ export default function ImpactPage() {
 
                 <div style={{ maxWidth: "80rem", margin: "0 auto", padding: "0 1.5rem" }}>
                     <StoriesCarousel />
+                </div>
+            </section>
+
+            {/* ── Gallery teaser ── */}
+            <section style={{ backgroundColor: "#ffffff", padding: "4rem 1.5rem" }}>
+                <div
+                    style={{
+                        maxWidth: "80rem",
+                        margin: "0 auto",
+                        backgroundColor: "#F9FAFB",
+                        borderRadius: "1.25rem",
+                        border: "1px solid #E5E7EB",
+                        padding: "2.5rem",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        flexWrap: "wrap" as const,
+                        gap: "1.5rem",
+                    }}
+                >
+                    <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+                        <div
+                            style={{
+                                width: "52px",
+                                height: "52px",
+                                borderRadius: "0.875rem",
+                                backgroundColor: "#E8F4F6",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexShrink: 0,
+                            }}
+                        >
+                            <ImageIcon size={22} style={{ color: "#0D5C6B" }} aria-hidden="true" />
+                        </div>
+                        <div>
+                            <p style={{ fontFamily: "var(--font-jakarta)", fontWeight: 700, fontSize: "1.0625rem", color: "#111827", marginBottom: "0.25rem" }}>
+                                See the impact in photos
+                            </p>
+                            <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", color: "#6B7280" }}>
+                                Browse our gallery of projects, distributions, and community moments.
+                            </p>
+                        </div>
+                    </div>
+
+                    <Link
+                        href="/gallery"
+                        style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                            padding: "0.75rem 1.5rem",
+                            borderRadius: "0.5rem",
+                            backgroundColor: "#0D5C6B",
+                            color: "#ffffff",
+                            fontFamily: "var(--font-inter)",
+                            fontWeight: 600,
+                            fontSize: "0.875rem",
+                            textDecoration: "none",
+                            flexShrink: 0,
+                            transition: "background-color 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#094955"; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#0D5C6B"; }}
+                    >
+                        View Gallery
+                        <ArrowRight size={15} aria-hidden="true" />
+                    </Link>
                 </div>
             </section>
 

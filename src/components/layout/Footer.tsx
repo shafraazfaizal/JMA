@@ -32,6 +32,7 @@ const footerLinks = {
       { label: "Membership", href: "/membership" },
       { label: "Events", href: "/events" },
       { label: "News & Updates", href: "/news" },
+      { label: "Gallery", href: "/gallery" },
       { label: "Impact Stories", href: "/impact" },
       { label: "Newsletter", href: "/newsletter" },
     ],

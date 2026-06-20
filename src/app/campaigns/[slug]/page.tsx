@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import {
     ArrowLeft, Users, Clock, AlertTriangle,
     CheckCircle, ArrowRight, Share2, Calendar,
+    Image as ImageIcon,
 } from "lucide-react";
 import { campaigns } from "@/data/campaigns";
 import { formatCurrency, calcProgress } from "@/lib/utils";
@@ -703,6 +704,38 @@ export default function CampaignDetailPage({
                                 <strong>{campaign.donorCount} people</strong> have already donated to this campaign
                             </p>
                         </div>
+
+                        {/* Gallery cross-link */}
+                        <Link
+                            href="/gallery?category=Projects"
+                            style={{
+                                marginTop: "1rem",
+                                backgroundColor: "#ffffff",
+                                border: "1px solid #E5E7EB",
+                                borderRadius: "0.875rem",
+                                padding: "0.875rem 1.125rem",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.625rem",
+                                textDecoration: "none",
+                                transition: "border-color 0.2s ease, background-color 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                const el = e.currentTarget as HTMLAnchorElement;
+                                el.style.borderColor = "#A0CDD5";
+                                el.style.backgroundColor = "#E8F4F6";
+                            }}
+                            onMouseLeave={(e) => {
+                                const el = e.currentTarget as HTMLAnchorElement;
+                                el.style.borderColor = "#E5E7EB";
+                                el.style.backgroundColor = "#ffffff";
+                            }}
+                        >
+                            <ImageIcon size={15} style={{ color: "#0D5C6B", flexShrink: 0 }} aria-hidden="true" />
+                            <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#374151", fontWeight: 500 }}>
+                                See photos from project sites
+                            </p>
+                        </Link>
                     </div>
                 </div>
 

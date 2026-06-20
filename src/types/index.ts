@@ -73,7 +73,8 @@ export type NewsCategory =
   | "Project Updates"
   | "Community News"
   | "Charity Education"
-  | "Event News";
+  | "Event News"
+  | "Newsletter";
 
 export interface NewsArticle {
   id: string;

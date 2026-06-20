@@ -129,7 +129,7 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Donate + hamburger */}
+          {/* Contact + Donate + hamburger */}
           <div
             style={{
               display: "flex",
@@ -138,6 +138,40 @@ export default function Navbar() {
               flexShrink: 0,
             }}
           >
+            {/* Contact Us — outlined, secondary */}
+            <Link
+              href="/contact"
+              className="contact-btn"
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontWeight: 600,
+                fontSize: "0.875rem",
+                color: "rgba(255,255,255,0.9)",
+                backgroundColor: "rgba(255,255,255,0.08)",
+                border: "1.5px solid rgba(255,255,255,0.35)",
+                padding: "0.5rem 1.125rem",
+                borderRadius: "0.5rem",
+                textDecoration: "none",
+                transition: "background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease",
+                whiteSpace: "nowrap",
+              }}
+              onMouseEnter={(e) => {
+                const el = e.currentTarget as HTMLAnchorElement;
+                el.style.backgroundColor = "rgba(255,255,255,0.16)";
+                el.style.borderColor = "rgba(255,255,255,0.6)";
+                el.style.color = "#ffffff";
+              }}
+              onMouseLeave={(e) => {
+                const el = e.currentTarget as HTMLAnchorElement;
+                el.style.backgroundColor = "rgba(255,255,255,0.08)";
+                el.style.borderColor = "rgba(255,255,255,0.35)";
+                el.style.color = "rgba(255,255,255,0.9)";
+              }}
+            >
+              Contact Us
+            </Link>
+
+            {/* Donate Now — solid, primary */}
             <Link
               href="/donate"
               className="donate-btn"
@@ -262,12 +296,36 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+
+              {/* Contact Us — mobile */}
+              <Link
+                href="/contact"
+                onClick={() => setMobileOpen(false)}
+                style={{
+                  display: "block",
+                  marginTop: "0.875rem",
+                  textAlign: "center",
+                  fontFamily: "var(--font-inter)",
+                  fontWeight: 600,
+                  fontSize: "1rem",
+                  color: "rgba(255,255,255,0.9)",
+                  backgroundColor: "rgba(255,255,255,0.08)",
+                  border: "1.5px solid rgba(255,255,255,0.35)",
+                  padding: "0.75rem",
+                  borderRadius: "0.5rem",
+                  textDecoration: "none",
+                }}
+              >
+                Contact Us
+              </Link>
+
+              {/* Donate Now — mobile */}
               <Link
                 href="/donate"
                 onClick={() => setMobileOpen(false)}
                 style={{
                   display: "block",
-                  marginTop: "0.875rem",
+                  marginTop: "0.625rem",
                   textAlign: "center",
                   fontFamily: "var(--font-inter)",
                   fontWeight: 600,
@@ -291,10 +349,12 @@ export default function Navbar() {
           .nav-desktop { display: flex !important; }
           .hamburger-btn { display: none !important; }
           .donate-btn { display: inline-flex !important; }
+          .contact-btn { display: inline-flex !important; }
         }
         @media (max-width: 767px) {
           .nav-desktop { display: none !important; }
           .hamburger-btn { display: flex !important; }
+          .contact-btn { display: none !important; }
         }
       `}</style>
     </>
