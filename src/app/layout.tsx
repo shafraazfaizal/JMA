@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import PublicChrome from "@/components/layout/PublicChrome";
 
 export const metadata: Metadata = {
   title: {
@@ -48,6 +47,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Google Fonts — loaded via <link>, NOT next/font */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -60,9 +60,7 @@ export default function RootLayout({
         />
       </head>
       <body style={{ fontFamily: "var(--font-inter)", margin: 0 }}>
-        <Navbar />
-        {children}
-        <Footer />
+        <PublicChrome>{children}</PublicChrome>
       </body>
     </html>
   );
