@@ -2,7 +2,7 @@
 // JMA SITE-WIDE DATA
 // ============================================
 
-import type { NavLink, StatItem, DonorWallItem } from "@/types";
+import type { StatItem, DonorWallItem } from "@/types";
 
 export const siteConfig = {
   name: "Jaffna Muslim Association",
@@ -27,14 +27,43 @@ export const siteConfig = {
   },
 };
 
-export const navLinks: NavLink[] = [
+// ============================================
+// NAVIGATION
+// ============================================
+// Supports both flat links and grouped dropdowns.
+// "Updates" groups News/Newsletter, Blog, and Events together
+// to keep the main navbar from getting overcrowded.
+
+export interface NavLink {
+  label: string;
+  href: string;
+}
+
+export interface NavDropdown {
+  label: string;
+  items: NavLink[];
+}
+
+export type NavItem = NavLink | NavDropdown;
+
+export function isDropdown(item: NavItem): item is NavDropdown {
+  return "items" in item;
+}
+
+export const navLinks: NavItem[] = [
   { label: "About", href: "/about" },
   { label: "Campaigns", href: "/campaigns" },
   { label: "Impact", href: "/impact" },
   { label: "Zakat", href: "/zakat" },
   { label: "Khardal Hasana", href: "/khardal-hasana" },
-  { label: "News", href: "/news" },
-  { label: "Events", href: "/events" },
+  {
+    label: "Updates",
+    items: [
+      { label: "News & Newsletter", href: "/news" },
+      { label: "Blog", href: "/blog" },
+      { label: "Events", href: "/events" },
+    ],
+  },
   { label: "Membership", href: "/membership" },
 ];
 

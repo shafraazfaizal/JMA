@@ -1,15 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
-import { navLinks } from "@/data/site";
+import { Menu, X, ChevronDown } from "lucide-react";
+import { navLinks, isDropdown } from "@/data/site";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState<string | null>(null);
+  const dropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -23,6 +26,16 @@ export default function Navbar() {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
+
+  // Small delay before closing on mouse-leave so moving from the
+  // trigger into the dropdown panel doesn't snap it shut.
+  const handleDropdownEnter = (label: string) => {
+    if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+    setOpenDropdown(label);
+  };
+  const handleDropdownLeave = () => {
+    dropdownTimeout.current = setTimeout(() => setOpenDropdown(null), 150);
+  };
 
   return (
     <>
@@ -60,6 +73,7 @@ export default function Navbar() {
             padding: "0 1.25rem",
             justifyContent: "space-between",
             gap: "1rem",
+            position: "relative",
           }}
         >
           {/* Logo */}
@@ -98,35 +112,137 @@ export default function Navbar() {
               justifyContent: "center",
             }}
           >
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  fontWeight: 500,
-                  fontSize: "0.875rem",
-                  color: "rgba(255,255,255,0.88)",
-                  textDecoration: "none",
-                  padding: "0.4rem 0.75rem",
-                  borderRadius: "0.5rem",
-                  transition: "color 0.15s ease, background 0.15s ease",
-                  whiteSpace: "nowrap",
-                }}
-                onMouseEnter={(e) => {
-                  const el = e.currentTarget as HTMLAnchorElement;
-                  el.style.color = "#ffffff";
-                  el.style.background = "rgba(255,255,255,0.12)";
-                }}
-                onMouseLeave={(e) => {
-                  const el = e.currentTarget as HTMLAnchorElement;
-                  el.style.color = "rgba(255,255,255,0.88)";
-                  el.style.background = "transparent";
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((item) => {
+              if (isDropdown(item)) {
+                const isOpen = openDropdown === item.label;
+                return (
+                  <div
+                    key={item.label}
+                    style={{ position: "relative" }}
+                    onMouseEnter={() => handleDropdownEnter(item.label)}
+                    onMouseLeave={handleDropdownLeave}
+                  >
+                    <button
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.3rem",
+                        fontFamily: "var(--font-inter)",
+                        fontWeight: 500,
+                        fontSize: "0.875rem",
+                        color: isOpen ? "#ffffff" : "rgba(255,255,255,0.88)",
+                        background: isOpen ? "rgba(255,255,255,0.12)" : "transparent",
+                        border: "none",
+                        padding: "0.4rem 0.75rem",
+                        borderRadius: "0.5rem",
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                        transition: "color 0.15s ease, background 0.15s ease",
+                      }}
+                      aria-expanded={isOpen}
+                      aria-haspopup="true"
+                    >
+                      {item.label}
+                      <ChevronDown
+                        size={14}
+                        style={{
+                          transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                          transition: "transform 0.2s ease",
+                        }}
+                        aria-hidden="true"
+                      />
+                    </button>
+
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -6 }}
+                          transition={{ duration: 0.15, ease: "easeOut" }}
+                          style={{
+                            position: "absolute",
+                            top: "calc(100% + 0.5rem)",
+                            left: 0,
+                            minWidth: "200px",
+                            backgroundColor: "rgba(7, 61, 71, 0.97)",
+                            backdropFilter: "blur(24px)",
+                            WebkitBackdropFilter: "blur(24px)",
+                            borderRadius: "0.75rem",
+                            border: "1px solid rgba(255,255,255,0.12)",
+                            boxShadow: "0 16px 40px -8px rgba(0,0,0,0.35)",
+                            overflow: "hidden",
+                            padding: "0.375rem",
+                          }}
+                        >
+                          {item.items.map((sub) => (
+                            <Link
+                              key={sub.href}
+                              href={sub.href}
+                              onClick={() => setOpenDropdown(null)}
+                              style={{
+                                display: "block",
+                                fontFamily: "var(--font-inter)",
+                                fontWeight: 500,
+                                fontSize: "0.875rem",
+                                color: "rgba(255,255,255,0.85)",
+                                textDecoration: "none",
+                                padding: "0.625rem 0.75rem",
+                                borderRadius: "0.5rem",
+                                transition: "background-color 0.15s ease, color 0.15s ease",
+                                whiteSpace: "nowrap",
+                              }}
+                              onMouseEnter={(e) => {
+                                const el = e.currentTarget as HTMLAnchorElement;
+                                el.style.backgroundColor = "rgba(255,255,255,0.1)";
+                                el.style.color = "#ffffff";
+                              }}
+                              onMouseLeave={(e) => {
+                                const el = e.currentTarget as HTMLAnchorElement;
+                                el.style.backgroundColor = "transparent";
+                                el.style.color = "rgba(255,255,255,0.85)";
+                              }}
+                            >
+                              {sub.label}
+                            </Link>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  style={{
+                    fontFamily: "var(--font-inter)",
+                    fontWeight: 500,
+                    fontSize: "0.875rem",
+                    color: "rgba(255,255,255,0.88)",
+                    textDecoration: "none",
+                    padding: "0.4rem 0.75rem",
+                    borderRadius: "0.5rem",
+                    transition: "color 0.15s ease, background 0.15s ease",
+                    whiteSpace: "nowrap",
+                  }}
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget as HTMLAnchorElement;
+                    el.style.color = "#ffffff";
+                    el.style.background = "rgba(255,255,255,0.12)";
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget as HTMLAnchorElement;
+                    el.style.color = "rgba(255,255,255,0.88)";
+                    el.style.background = "transparent";
+                  }}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Contact + Donate + hamburger */}
@@ -138,7 +254,6 @@ export default function Navbar() {
               flexShrink: 0,
             }}
           >
-            {/* Contact Us — outlined, secondary */}
             <Link
               href="/contact"
               className="contact-btn"
@@ -171,7 +286,6 @@ export default function Navbar() {
               Contact Us
             </Link>
 
-            {/* Donate Now — solid, primary */}
             <Link
               href="/donate"
               className="donate-btn"
@@ -247,6 +361,8 @@ export default function Navbar() {
               border: "1px solid rgba(255,255,255,0.12)",
               boxShadow: "0 16px 48px -8px rgba(0,0,0,0.3)",
               overflow: "hidden",
+              maxHeight: "calc(100vh - 7rem)",
+              overflowY: "auto" as const,
             }}
           >
             {/* Mobile logo */}
@@ -269,33 +385,98 @@ export default function Navbar() {
               aria-label="Mobile navigation"
               style={{ padding: "0.5rem 1.25rem 0.875rem" }}
             >
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  style={{
-                    display: "block",
-                    fontFamily: "var(--font-inter)",
-                    fontWeight: 500,
-                    fontSize: "1rem",
-                    color: "rgba(255,255,255,0.88)",
-                    textDecoration: "none",
-                    padding: "0.75rem 0.5rem",
-                    borderBottom: "1px solid rgba(255,255,255,0.07)",
-                    transition: "color 0.15s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.color = "#C9A84C";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.color =
-                      "rgba(255,255,255,0.88)";
-                  }}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((item) => {
+                if (isDropdown(item)) {
+                  const isOpen = mobileDropdownOpen === item.label;
+                  return (
+                    <div key={item.label} style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+                      <button
+                        onClick={() => setMobileDropdownOpen(isOpen ? null : item.label)}
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          fontFamily: "var(--font-inter)",
+                          fontWeight: 500,
+                          fontSize: "1rem",
+                          color: "rgba(255,255,255,0.88)",
+                          padding: "0.75rem 0.5rem",
+                        }}
+                        aria-expanded={isOpen}
+                      >
+                        {item.label}
+                        <ChevronDown
+                          size={16}
+                          style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease" }}
+                          aria-hidden="true"
+                        />
+                      </button>
+                      <AnimatePresence>
+                        {isOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2, ease: "easeOut" }}
+                            style={{ overflow: "hidden" }}
+                          >
+                            {item.items.map((sub) => (
+                              <Link
+                                key={sub.href}
+                                href={sub.href}
+                                onClick={() => { setMobileOpen(false); setMobileDropdownOpen(null); }}
+                                style={{
+                                  display: "block",
+                                  fontFamily: "var(--font-inter)",
+                                  fontWeight: 400,
+                                  fontSize: "0.9375rem",
+                                  color: "rgba(255,255,255,0.7)",
+                                  textDecoration: "none",
+                                  padding: "0.625rem 0.5rem 0.625rem 1.25rem",
+                                }}
+                              >
+                                {sub.label}
+                              </Link>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    style={{
+                      display: "block",
+                      fontFamily: "var(--font-inter)",
+                      fontWeight: 500,
+                      fontSize: "1rem",
+                      color: "rgba(255,255,255,0.88)",
+                      textDecoration: "none",
+                      padding: "0.75rem 0.5rem",
+                      borderBottom: "1px solid rgba(255,255,255,0.07)",
+                      transition: "color 0.15s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLAnchorElement).style.color = "#C9A84C";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLAnchorElement).style.color =
+                        "rgba(255,255,255,0.88)";
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
 
               {/* Contact Us — mobile */}
               <Link
