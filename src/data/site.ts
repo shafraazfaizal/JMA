@@ -8,11 +8,11 @@ export const siteConfig = {
   name: "Jaffna Muslim Association",
   shortName: "JMA",
   tagline: "Serving the Jaffna Muslim community across two nations",
-  charityNumber: "XXXXXX",
+  charityNumber: "1143032",
   founded: 2002,
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://jaffnamuslims.org.uk",
   email: "info@jaffnamuslims.org.uk",
-  phone: "+44 XXXX XXXXXX",
+  phone: "+44 786 139 1459",
   address: "United Kingdom",
   bankDetails: {
     bank: "Lloyds Bank",
