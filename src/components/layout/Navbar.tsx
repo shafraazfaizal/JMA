@@ -27,8 +27,6 @@ export default function Navbar() {
     };
   }, [mobileOpen]);
 
-  // Small delay before closing on mouse-leave so moving from the
-  // trigger into the dropdown panel doesn't snap it shut.
   const handleDropdownEnter = (label: string) => {
     if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
     setOpenDropdown(label);
@@ -60,6 +58,7 @@ export default function Navbar() {
               : "rgba(255,255,255,0.22)",
           }}
           transition={{ duration: 0.35, ease: "easeInOut" }}
+          className="navbar-header"
           style={{
             borderRadius: "0.75rem",
             border: "1px solid rgba(255,255,255,0.22)",
@@ -79,11 +78,14 @@ export default function Navbar() {
           {/* Logo */}
           <Link
             href="/"
+            className="navbar-logo-link"
             style={{
               display: "flex",
               alignItems: "center",
               textDecoration: "none",
-              flexShrink: 0,
+              flexShrink: 1,
+              minWidth: 0,
+              overflow: "hidden",
             }}
           >
             <Image
@@ -92,10 +94,12 @@ export default function Navbar() {
               width={220}
               height={56}
               priority
+              className="navbar-logo-img"
               style={{
                 display: "block",
                 height: "44px",
                 width: "auto",
+                maxWidth: "100%",
               }}
             />
           </Link>
@@ -247,6 +251,7 @@ export default function Navbar() {
 
           {/* Contact + Donate + hamburger */}
           <div
+            className="navbar-actions"
             style={{
               display: "flex",
               alignItems: "center",
@@ -301,6 +306,7 @@ export default function Navbar() {
                 transition: "background-color 0.2s ease, transform 0.15s ease",
                 whiteSpace: "nowrap",
                 boxShadow: "0 2px 10px rgba(201,168,76,0.4)",
+                flexShrink: 0,
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget as HTMLAnchorElement;
@@ -332,6 +338,7 @@ export default function Navbar() {
                 height: "38px",
                 alignItems: "center",
                 justifyContent: "center",
+                flexShrink: 0,
               }}
             >
               {mobileOpen ? <X size={18} /> : <Menu size={18} />}
@@ -536,6 +543,15 @@ export default function Navbar() {
           .nav-desktop { display: none !important; }
           .hamburger-btn { display: flex !important; }
           .contact-btn { display: none !important; }
+          .navbar-header { padding: 0 0.75rem !important; gap: 0.5rem !important; }
+          .navbar-logo-img { height: 36px !important; }
+          .navbar-actions { gap: 0.5rem !important; }
+        }
+        @media (max-width: 400px) {
+          .navbar-header { padding: 0 0.625rem !important; gap: 0.375rem !important; }
+          .navbar-logo-img { height: 32px !important; }
+          .donate-btn { padding: 0.5rem 0.875rem !important; font-size: 0.8125rem !important; }
+          .hamburger-btn { width: 34px !important; height: 34px !important; }
         }
       `}</style>
     </>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Globe, MessageSquareShare, Send, Heart } from "lucide-react";
+import { Globe, MessageSquareShare, Send } from "lucide-react";
 import { siteConfig } from "@/data/site";
 
 const footerLinks = {
@@ -291,16 +291,26 @@ export default function Footer() {
           <span
             style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}
           >
-            Made with{" "}
-            <Heart
-              size={12}
-              style={{ color: "#C9A84C", fill: "#C9A84C", display: "inline" }}
-              aria-hidden="true"
-            />{" "}
-            for the Jaffna Muslim community · Built by{" "}
-            <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: 500 }}>
-              SKAYL Studio
-            </span>
+            Built by{" "}
+            <a
+              href="https://skayl.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: "rgba(255,255,255,0.6)",
+                fontWeight: 500,
+                textDecoration: "none",
+                transition: "color 0.15s ease",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.color = "#C9A84C";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.6)";
+              }}
+            >
+              SKAYL
+            </a>
           </span>
         </div>
       </div>
