@@ -9,11 +9,18 @@ import ZakatSection from "@/components/sections/ZakatSection";
 import StoriesSection from "@/components/sections/StoriesSection";
 import NewsEventsSection from "@/components/sections/NewsEventsSection";
 import NewsletterStrip from "@/components/sections/NewsletterStrip";
+import AnnouncementTicker from "@/components/layout/AnnouncementTicker";
+import { getActiveAnnouncements } from "@/lib/admin/announcements";
 
-export default function HomePage() {
+export const revalidate = 60;
+
+export default async function HomePage() {
+  const announcements = await getActiveAnnouncements();
+
   return (
     <main>
       <HeroSection />
+      <AnnouncementTicker announcements={announcements} />
       <div style={{ paddingTop: "20px" }} /> {/* spacer for stats overlap */}
       <CampaignBanner />
       <DonationSection />

@@ -10,6 +10,7 @@ const footerLinks = {
     label: "Organisation",
     links: [
       { label: "About JMA", href: "/about" },
+      { label: "Our History", href: "/history" },
       { label: "Meet the Committee", href: "/about#team" },
       { label: "Governance", href: "/about#governance" },
       { label: "Annual Reports", href: "/reports" },

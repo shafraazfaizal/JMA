@@ -3,14 +3,15 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-    LayoutDashboard, Megaphone, Newspaper, PenSquare,
+    LayoutDashboard, Megaphone, Flag, Newspaper, PenSquare,
     Calendar, TrendingUp, Image as ImageIcon, LogOut, ExternalLink,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-    { href: "/admin/campaigns", label: "Campaigns", icon: Megaphone },
+    { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
+    { href: "/admin/campaigns", label: "Campaigns", icon: Flag },
     { href: "/admin/news", label: "News & Newsletter", icon: Newspaper },
     { href: "/admin/blog", label: "Blog", icon: PenSquare },
     { href: "/admin/events", label: "Events", icon: Calendar },
