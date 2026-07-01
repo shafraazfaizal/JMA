@@ -294,7 +294,7 @@ export default function Footer() {
           >
             Built by{" "}
             <a
-              href="https://skayl.com"
+              // href="https://skayl.com"
               target="_blank"
               rel="noopener noreferrer"
               style={{
