@@ -78,7 +78,7 @@ export default function Footer() {
               }}
             >
               <Image
-                src="/logo/logo-white.svg"
+                src="/logo/logo.svg"
                 alt="Jaffna Muslim Association"
                 width={200}
                 height={52}

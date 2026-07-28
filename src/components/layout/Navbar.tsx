@@ -89,7 +89,7 @@ export default function Navbar() {
             }}
           >
             <Image
-              src="/logo/logo-white.svg"
+              src="/logo/logo.svg"
               alt="Jaffna Muslim Association"
               width={220}
               height={56}
