@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Globe, MessageSquareShare, Send } from "lucide-react";
+import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import { siteConfig } from "@/data/site";
 
 const footerLinks = {
@@ -41,6 +41,27 @@ const footerLinks = {
   },
 };
 
+const socialLinks = [
+  {
+    href: siteConfig.social.facebook,
+    icon: FaFacebookF,
+    label: "Facebook",
+    hoverColour: "#1877F2",
+  },
+  {
+    href: siteConfig.social.instagram,
+    icon: FaInstagram,
+    label: "Instagram",
+    hoverColour: "#E1306C",
+  },
+  {
+    href: siteConfig.social.whatsapp,
+    icon: FaWhatsapp,
+    label: "WhatsApp",
+    hoverColour: "#25D366",
+  },
+];
+
 export default function Footer() {
   return (
     <footer
@@ -51,74 +72,32 @@ export default function Footer() {
       }}
     >
       {/* Main footer body */}
-      <div
-        style={{
-          maxWidth: "80rem",
-          margin: "0 auto",
-          padding: "4rem 1.5rem 3rem",
-        }}
-      >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "3rem",
-          }}
-        >
+      <div style={{ maxWidth: "80rem", margin: "0 auto", padding: "4rem 1.5rem 3rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "3rem" }}>
+
           {/* Brand column */}
           <div style={{ gridColumn: "span 1" }}>
-            {/* Logo */}
-            <Link
-              href="/"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                textDecoration: "none",
-                marginBottom: "1.5rem",
-              }}
-            >
+            <Link href="/" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none", marginBottom: "1.5rem" }}>
               <Image
                 src="/logo/logo.svg"
                 alt="Jaffna Muslim Association"
                 width={200}
                 height={52}
-                style={{
-                  display: "block",
-                  height: "48px",
-                  width: "auto",
-                }}
+                style={{ display: "block", height: "48px", width: "auto" }}
               />
             </Link>
 
-            <p
-              style={{
-                fontSize: "0.875rem",
-                lineHeight: 1.7,
-                marginBottom: "1rem",
-                color: "rgba(255,255,255,0.65)",
-              }}
-            >
-              Serving the Jaffna Muslim community across two nations — bridging
-              the UK diaspora with families on the ground.
+            <p style={{ fontSize: "0.875rem", lineHeight: 1.7, marginBottom: "1rem", color: "rgba(255,255,255,0.65)" }}>
+              Serving the Sri Lankan community across two nations.
             </p>
 
-            <p
-              style={{
-                fontSize: "0.75rem",
-                color: "rgba(255,255,255,0.45)",
-                marginBottom: "1.5rem",
-              }}
-            >
+            <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.45)", marginBottom: "1.5rem" }}>
               UK Registered Charity No. {siteConfig.charityNumber}
             </p>
 
             {/* Social icons */}
             <div style={{ display: "flex", gap: "0.75rem" }}>
-              {[
-                { href: siteConfig.social.facebook, icon: Globe, label: "Facebook" },
-                { href: siteConfig.social.instagram, icon: Send, label: "Instagram" },
-                { href: siteConfig.social.whatsapp, icon: MessageSquareShare, label: "WhatsApp" },
-              ].map(({ href, icon: Icon, label }) => (
+              {socialLinks.map(({ href, icon: Icon, label, hoverColour }) => (
                 <a
                   key={label}
                   href={href}
@@ -126,27 +105,21 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: "36px",
-                    height: "36px",
-                    borderRadius: "0.5rem",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    width: "36px", height: "36px", borderRadius: "0.5rem",
                     background: "rgba(255,255,255,0.07)",
                     color: "rgba(255,255,255,0.6)",
                     transition: "background 0.2s ease, color 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.background =
-                      "rgba(201,168,76,0.2)";
-                    (e.currentTarget as HTMLAnchorElement).style.color =
-                      "#C9A84C";
+                    const el = e.currentTarget as HTMLAnchorElement;
+                    el.style.background = `${hoverColour}22`;
+                    el.style.color = hoverColour;
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.background =
-                      "rgba(255,255,255,0.07)";
-                    (e.currentTarget as HTMLAnchorElement).style.color =
-                      "rgba(255,255,255,0.6)";
+                    const el = e.currentTarget as HTMLAnchorElement;
+                    el.style.background = "rgba(255,255,255,0.07)";
+                    el.style.color = "rgba(255,255,255,0.6)";
                   }}
                 >
                   <Icon size={16} />
@@ -158,47 +131,17 @@ export default function Footer() {
           {/* Link columns */}
           {Object.values(footerLinks).map((col) => (
             <div key={col.label}>
-              <h3
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  fontWeight: 600,
-                  fontSize: "0.75rem",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: "rgba(255,255,255,0.45)",
-                  marginBottom: "1rem",
-                }}
-              >
+              <h3 style={{ fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "rgba(255,255,255,0.45)", marginBottom: "1rem" }}>
                 {col.label}
               </h3>
-              <ul
-                style={{
-                  listStyle: "none",
-                  padding: 0,
-                  margin: 0,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "0.625rem",
-                }}
-              >
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column" as const, gap: "0.625rem" }}>
                 {col.links.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      style={{
-                        fontSize: "0.9rem",
-                        color: "rgba(255,255,255,0.65)",
-                        textDecoration: "none",
-                        transition: "color 0.15s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLAnchorElement).style.color =
-                          "#C9A84C";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLAnchorElement).style.color =
-                          "rgba(255,255,255,0.65)";
-                      }}
+                      style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.65)", textDecoration: "none", transition: "color 0.15s ease" }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#C9A84C"; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.65)"; }}
                     >
                       {link.label}
                     </Link>
@@ -210,27 +153,10 @@ export default function Footer() {
 
           {/* Bank transfer box */}
           <div>
-            <h3
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontWeight: 600,
-                fontSize: "0.75rem",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: "rgba(255,255,255,0.45)",
-                marginBottom: "1rem",
-              }}
-            >
+            <h3 style={{ fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "rgba(255,255,255,0.45)", marginBottom: "1rem" }}>
               Direct Bank Transfer
             </h3>
-            <div
-              style={{
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: "0.75rem",
-                padding: "1.25rem",
-              }}
-            >
+            <div style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0.75rem", padding: "1.25rem" }}>
               {[
                 { label: "Bank", value: siteConfig.bankDetails.bank },
                 { label: "Account Name", value: siteConfig.bankDetails.accountName },
@@ -238,24 +164,10 @@ export default function Footer() {
                 { label: "Account No.", value: siteConfig.bankDetails.accountNumber },
               ].map(({ label, value }) => (
                 <div key={label} style={{ marginBottom: "0.625rem" }}>
-                  <div
-                    style={{
-                      fontSize: "0.7rem",
-                      color: "rgba(255,255,255,0.4)",
-                      marginBottom: "0.125rem",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em",
-                    }}
-                  >
+                  <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.4)", marginBottom: "0.125rem", textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>
                     {label}
                   </div>
-                  <div
-                    style={{
-                      fontSize: "0.875rem",
-                      color: "#ffffff",
-                      fontWeight: 500,
-                    }}
-                  >
+                  <div style={{ fontSize: "0.875rem", color: "#ffffff", fontWeight: 500 }}>
                     {value}
                   </div>
                 </div>
@@ -266,49 +178,18 @@ export default function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div
-        style={{
-          borderTop: "1px solid rgba(255,255,255,0.07)",
-          padding: "1.25rem 1.5rem",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "80rem",
-            margin: "0 auto",
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "0.5rem",
-            fontSize: "0.8125rem",
-            color: "rgba(255,255,255,0.4)",
-          }}
-        >
-          <span>
-            © {new Date().getFullYear()} Jaffna Muslim Association. All rights
-            reserved.
-          </span>
-          <span
-            style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}
-          >
+      <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", padding: "1.25rem 1.5rem" }}>
+        <div style={{ maxWidth: "80rem", margin: "0 auto", display: "flex", flexWrap: "wrap" as const, alignItems: "center", justifyContent: "space-between", gap: "0.5rem", fontSize: "0.8125rem", color: "rgba(255,255,255,0.4)" }}>
+          <span>© {new Date().getFullYear()} Jaffna Muslim Association. All rights reserved.</span>
+          <span style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
             Built by{" "}
             <a
-              // href="https://skayl.com"
+              href="https://www.skayl.digital/"
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                color: "rgba(255,255,255,0.6)",
-                fontWeight: 500,
-                textDecoration: "none",
-                transition: "color 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.color = "#C9A84C";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.6)";
-              }}
+              style={{ color: "rgba(255,255,255,0.6)", fontWeight: 500, textDecoration: "none", transition: "color 0.15s ease" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#C9A84C"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.6)"; }}
             >
               SKAYL
             </a>

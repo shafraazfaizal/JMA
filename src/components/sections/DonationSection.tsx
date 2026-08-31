@@ -86,7 +86,7 @@ export default function DonationSection() {
                             marginBottom: "1.25rem",
                         }}
                     >
-                        Every pound you give changes lives in Jaffna
+                        Every pound you give changes lives in Sri Lanka
                     </h2>
 
                     <p
@@ -98,7 +98,7 @@ export default function DonationSection() {
                             marginBottom: "2rem",
                         }}
                     >
-                        100% of your donation reaches the ground. No admin fees deducted — our UK volunteers cover all operating costs so every penny goes directly to families in Jaffna.
+                        100% of your donation reaches the ground. No admin fees deducted — our UK volunteers cover all operating costs so every penny goes directly to families in Sri Lanka.
                     </p>
 
                     {/* Impact equivalents */}
@@ -166,7 +166,7 @@ export default function DonationSection() {
                                 color: "#9CA3AF",
                             }}
                         >
-                            — Community elder, Mankumban, Jaffna
+                            — Community elder, Mankumban, Sri Lanka
                         </footer>
                     </blockquote>
                 </div>

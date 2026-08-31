@@ -54,24 +54,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 {/* Brand */}
                 <div style={{ padding: "1.5rem 1.5rem 1.25rem", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
-                        <div
-                            style={{
-                                width: "32px",
-                                height: "32px",
-                                borderRadius: "0.625rem",
-                                backgroundColor: "rgba(201,168,76,0.15)",
-                                border: "1.5px solid rgba(201,168,76,0.4)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                flexShrink: 0,
-                            }}
-                        >
-                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                                <path d="M10 3C7.5 3 5.5 5 5.5 7.5C5.5 10 7.5 12 10 12C8.2 12 6.5 11 6.5 8.5C6.5 7 7.5 5.5 9 5C8.5 5 10 3 10 3Z" fill="#C9A84C" />
-                                <path d="M13 8L13.5 9.5L15 9L13.8 10L14.3 11.5L13 10.5L11.7 11.5L12.2 10L11 9L12.5 9.5L13 8Z" fill="#C9A84C" />
-                            </svg>
-                        </div>
                         <div>
                             <p style={{ fontFamily: "var(--font-jakarta)", fontWeight: 800, fontSize: "0.9375rem", color: "#ffffff", lineHeight: 1.2 }}>
                                 JMA Admin

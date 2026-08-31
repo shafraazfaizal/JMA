@@ -23,7 +23,7 @@ export const siteConfig = {
   social: {
     facebook: "https://facebook.com/jaffnamuslimassociation",
     instagram: "https://www.instagram.com/jaffnamuslimassociation_uk/",
-    whatsapp: "https://wa.me/44XXXXXXXXXX",
+    whatsapp: "https://wa.me/447861391459",
   },
 };
 
