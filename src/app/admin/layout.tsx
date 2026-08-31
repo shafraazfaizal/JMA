@@ -92,7 +92,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     {collapsed && (
                         <div style={{ width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                             <Image
-                                src="/logo/logo-white.svg"
+                                src="/logo/logo.svg"
                                 alt="JMA"
                                 width={28}
                                 height={28}
