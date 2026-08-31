@@ -11,14 +11,14 @@ export const siteConfig = {
   charityNumber: "1143032",
   founded: 2002,
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://jaffnamuslims.org.uk",
-  email: "info@jaffnamuslims.org.uk",
+  email: "jmauk@ymail.com",
   phone: "+44 786 139 1459",
   address: "United Kingdom",
   bankDetails: {
-    bank: "Lloyds Bank",
+    bank: "Metro Bank",
     accountName: "Jaffna Muslim Association",
-    sortCode: "30-94-66",
-    accountNumber: "00980043",
+    sortCode: "23-05-80",
+    accountNumber: "55646104",
   },
   social: {
     facebook: "https://facebook.com/jaffnamuslimassociation",
