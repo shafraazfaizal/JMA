@@ -252,11 +252,11 @@ export default function HeroSection({ announcements = [] }: HeroSectionProps) {
                                 letterSpacing: "-0.02em",
                             }}
                         >
-                            Serving the{" "}
+                            Serving humanity,{" "}
                             <span style={{ color: "#C9A84C", fontStyle: "italic", fontFamily: "var(--font-noto)" }}>
-                                Sri Lankan community
+                                one life
                             </span>{" "}
-                            across two nations
+                            at a time.
                         </h1>
 
                         <p style={{

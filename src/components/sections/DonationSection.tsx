@@ -86,7 +86,7 @@ export default function DonationSection() {
                             marginBottom: "1.25rem",
                         }}
                     >
-                        Every pound you give changes lives in Sri Lanka
+                        Every pound you give changes lives
                     </h2>
 
                     <p
@@ -98,7 +98,7 @@ export default function DonationSection() {
                             marginBottom: "2rem",
                         }}
                     >
-                        100% of your donation reaches the ground. No admin fees deducted — our UK volunteers cover all operating costs so every penny goes directly to families in Sri Lanka.
+                        100% of your donation reaches those in genuine need. No admin fees deducted — our UK volunteers cover all operating costs so every penny goes directly to the families and individuals who need it most.
                     </p>
 
                     {/* Impact equivalents */}
