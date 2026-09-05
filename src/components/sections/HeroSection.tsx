@@ -253,7 +253,7 @@ export default function HeroSection({ announcements = [] }: HeroSectionProps) {
                     style={{
                         position: "relative", zIndex: 2,
                         maxWidth: "80rem", margin: "0 auto",
-                        padding: "8rem 1.5rem 10rem", width: "100%",
+                        padding: "5rem 1.5rem 10rem", width: "100%",
                         display: "grid",
                         gridTemplateColumns: hasAnnouncements ? "1fr 380px" : "1fr",
                         gap: "3rem",

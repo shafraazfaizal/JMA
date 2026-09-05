@@ -82,6 +82,7 @@ export default function Navbar() {
             style={{
               display: "flex",
               alignItems: "center",
+              gap: "0.625rem",
               textDecoration: "none",
               flexShrink: 1,
               minWidth: 0,
@@ -100,8 +101,35 @@ export default function Navbar() {
                 height: "44px",
                 width: "auto",
                 maxWidth: "100%",
+                flexShrink: 0,
               }}
             />
+            <span
+              className="navbar-org-name"
+              style={{
+                fontFamily: "helvetica",
+                fontStyle: "bold",
+                fontSize: "0.75rem",
+                lineHeight: 1.2,
+                display: "flex",
+                flexDirection: "column" as const,
+                whiteSpace: "nowrap" as const,
+                letterSpacing: "0.08em",
+              }}
+            >
+              <span>
+                <span style={{ color: "#C9A84C", fontWeight: 600 }}>J</span>
+                <span style={{ color: "#ffffff", fontWeight: 400 }}>affna</span>
+              </span>
+              <span>
+                <span style={{ color: "#C9A84C", fontWeight: 600 }}>M</span>
+                <span style={{ color: "#ffffff", fontWeight: 400 }}>uslim</span>
+              </span>
+              <span>
+                <span style={{ color: "#C9A84C", fontWeight: 600 }}>A</span>
+                <span style={{ color: "#ffffff", fontWeight: 400 }}>ssociation</span>
+              </span>
+            </span>
           </Link>
 
           {/* Desktop nav */}
@@ -373,7 +401,7 @@ export default function Navbar() {
             }}
           >
             {/* Mobile logo */}
-            <div
+            {/* <div
               style={{
                 padding: "1.125rem 1.25rem 0.75rem",
                 borderBottom: "1px solid rgba(255,255,255,0.07)",
@@ -386,7 +414,7 @@ export default function Navbar() {
                 height={46}
                 style={{ height: "36px", width: "auto" }}
               />
-            </div>
+            </div> */}
 
             <nav
               aria-label="Mobile navigation"
@@ -546,12 +574,14 @@ export default function Navbar() {
           .navbar-header { padding: 0 0.75rem !important; gap: 0.5rem !important; }
           .navbar-logo-img { height: 36px !important; }
           .navbar-actions { gap: 0.5rem !important; }
+          .navbar-org-name { font-size: 0.75rem !important; }
         }
         @media (max-width: 400px) {
           .navbar-header { padding: 0 0.625rem !important; gap: 0.375rem !important; }
           .navbar-logo-img { height: 32px !important; }
           .donate-btn { padding: 0.5rem 0.875rem !important; font-size: 0.8125rem !important; }
           .hamburger-btn { width: 34px !important; height: 34px !important; }
+          .navbar-org-name { font-size: 0.625rem !important; }
         }
       `}</style>
     </>
