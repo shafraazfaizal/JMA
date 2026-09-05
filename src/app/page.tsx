@@ -10,7 +10,7 @@ import ZakatSection from "@/components/sections/ZakatSection";
 import StoriesSection from "@/components/sections/StoriesSection";
 import NewsEventsSection from "@/components/sections/NewsEventsSection";
 import NewsletterStrip from "@/components/sections/NewsletterStrip";
-import { getActiveAnnouncements } from "@/lib/admin/announcements";
+import { getAnnouncementFeed } from "@/lib/announcements-feed";
 import { getAllNewsArticles } from "@/lib/admin/news";
 import { getAllEvents } from "@/lib/admin/events";
 import { getAllCampaigns } from "@/lib/admin/campaigns";
@@ -19,7 +19,7 @@ export const revalidate = 60;
 
 export default async function HomePage() {
   const [announcements, articles, events, campaigns] = await Promise.all([
-    getActiveAnnouncements(),
+    getAnnouncementFeed(),
     getAllNewsArticles(),
     getAllEvents(),
     getAllCampaigns(),
@@ -29,7 +29,6 @@ export default async function HomePage() {
     (c) => c.status === "active" || c.status === "urgent"
   );
 
-  // Banner shows the most urgent campaign first, then falls back to first active
   const bannerCampaign =
     activeCampaigns.find((c) => c.status === "urgent") ??
     activeCampaigns[0] ??

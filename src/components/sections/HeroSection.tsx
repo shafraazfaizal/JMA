@@ -5,16 +5,18 @@ import { useEffect, useState } from "react";
 import {
     CheckCircle, Calendar, Users, FolderOpen,
     CalendarDays, HandHeart, GraduationCap, Network, Shield,
-    Megaphone, ArrowRight, ChevronLeft, ChevronRight,
+    Megaphone, Newspaper, PenSquare, Flag, AlertTriangle,
+    ArrowRight, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import CountUp from "@/components/ui/CountUp";
 import type { DBHeroAnnouncement } from "@/types/announcement-types";
+import type { FeedAnnouncement } from "@/lib/announcements-feed";
 
 const stats = [
-    { icon: Calendar, value: 20, suffix: "+", label: "Years of Service" },
+    { icon: Calendar, value: 20, suffix: "+", label: "Years of Service", format: false },
     { icon: Users, value: 3000, suffix: "+", label: "Families Helped", format: true },
-    { icon: FolderOpen, value: 200, suffix: "+", label: "Projects Delivered" },
-    { icon: CheckCircle, value: 100, suffix: "%", label: "Donations to Ground" },
+    { icon: FolderOpen, value: 200, suffix: "+", label: "Projects Delivered", format: false },
+    { icon: CheckCircle, value: 100, suffix: "%", label: "Donations to Ground", format: false },
 ];
 
 const pillars = [
@@ -25,8 +27,19 @@ const pillars = [
     { icon: Shield, label: "Governance, Meetings & Compliance" },
 ];
 
+type FeedType = "manual" | "news" | "blog" | "campaign" | "urgent" | "event";
+
+const feedIcons: Record<FeedType, { icon: typeof Megaphone; colour: string; label: string }> = {
+    manual: { icon: Megaphone, colour: "#C9A84C", label: "Announcement" },
+    news: { icon: Newspaper, colour: "#60A5FA", label: "Latest News" },
+    blog: { icon: PenSquare, colour: "#A78BFA", label: "New Blog Post" },
+    campaign: { icon: Flag, colour: "#34D399", label: "New Campaign" },
+    urgent: { icon: AlertTriangle, colour: "#F87171", label: "Urgent Appeal" },
+    event: { icon: CalendarDays, colour: "#FBBF24", label: "Upcoming Event" },
+};
+
 // ── Glassmorphism Announcement Panel ─────────────────────────────────────────
-function AnnouncementPanel({ announcements }: { announcements: DBHeroAnnouncement[] }) {
+function AnnouncementPanel({ announcements }: { announcements: FeedAnnouncement[] }) {
     const [index, setIndex] = useState(0);
     const [paused, setPaused] = useState(false);
 
@@ -41,6 +54,8 @@ function AnnouncementPanel({ announcements }: { announcements: DBHeroAnnouncemen
     if (announcements.length === 0) return null;
 
     const current = announcements[index];
+    const feedType: FeedType = (current as FeedAnnouncement).feed_type ?? "manual";
+    const { icon: FeedIcon, colour: iconColour, label: typeLabel } = feedIcons[feedType];
 
     return (
         <div
@@ -62,32 +77,36 @@ function AnnouncementPanel({ announcements }: { announcements: DBHeroAnnouncemen
                 overflow: "hidden",
             }}
         >
-            {/* Subtle inner glow */}
+            {/* Subtle inner glow — colour changes per feed type */}
             <div
                 aria-hidden="true"
                 style={{
                     position: "absolute", top: "-30px", right: "-30px",
                     width: "120px", height: "120px", borderRadius: "50%",
-                    background: "radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%)",
+                    background: `radial-gradient(circle, ${iconColour}25 0%, transparent 70%)`,
                     pointerEvents: "none",
+                    transition: "background 0.4s ease",
                 }}
             />
 
-            {/* Header */}
+            {/* Header — icon + label change per feed type */}
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", position: "relative", zIndex: 1 }}>
                 <div style={{
                     width: "28px", height: "28px", borderRadius: "0.5rem",
-                    backgroundColor: "rgba(201,168,76,0.15)",
-                    border: "1px solid rgba(201,168,76,0.3)",
+                    backgroundColor: `${iconColour}25`,
+                    border: `1px solid ${iconColour}60`,
                     display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                    transition: "all 0.3s ease",
                 }}>
-                    <Megaphone size={13} style={{ color: "#C9A84C" }} aria-hidden="true" />
+                    <FeedIcon size={13} style={{ color: iconColour }} aria-hidden="true" />
                 </div>
                 <span style={{
                     fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.7rem",
-                    letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "#C9A84C",
+                    letterSpacing: "0.1em", textTransform: "uppercase" as const,
+                    color: iconColour,
+                    transition: "color 0.3s ease",
                 }}>
-                    Latest Announcements
+                    {typeLabel}
                 </span>
             </div>
 
@@ -104,7 +123,7 @@ function AnnouncementPanel({ announcements }: { announcements: DBHeroAnnouncemen
                                 fontSize: "1.0625rem", color: "#ffffff", lineHeight: 1.5,
                                 marginBottom: "0.75rem", transition: "color 0.15s ease",
                             }}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#C9A84C"; }}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = iconColour; }}
                             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#ffffff"; }}
                         >
                             {current.message}
@@ -112,7 +131,7 @@ function AnnouncementPanel({ announcements }: { announcements: DBHeroAnnouncemen
                         <span style={{
                             display: "inline-flex", alignItems: "center", gap: "0.3rem",
                             fontFamily: "var(--font-inter)", fontWeight: 600,
-                            fontSize: "0.8125rem", color: "#C9A84C",
+                            fontSize: "0.8125rem", color: iconColour,
                         }}>
                             Read more <ArrowRight size={13} aria-hidden="true" />
                         </span>
@@ -142,7 +161,7 @@ function AnnouncementPanel({ announcements }: { announcements: DBHeroAnnouncemen
                                 style={{
                                     width: i === index ? "18px" : "6px", height: "6px",
                                     borderRadius: "9999px", border: "none",
-                                    backgroundColor: i === index ? "#C9A84C" : "rgba(255,255,255,0.3)",
+                                    backgroundColor: i === index ? iconColour : "rgba(255,255,255,0.3)",
                                     cursor: "pointer", padding: 0, transition: "all 0.3s ease",
                                 }}
                             />
@@ -187,7 +206,7 @@ function AnnouncementPanel({ announcements }: { announcements: DBHeroAnnouncemen
 
 // ── Main HeroSection ──────────────────────────────────────────────────────────
 interface HeroSectionProps {
-    announcements?: DBHeroAnnouncement[];
+    announcements?: FeedAnnouncement[];
 }
 
 export default function HeroSection({ announcements = [] }: HeroSectionProps) {
@@ -254,9 +273,8 @@ export default function HeroSection({ announcements = [] }: HeroSectionProps) {
                         >
                             Serving humanity,{" "}
                             <span style={{ color: "#C9A84C", fontStyle: "italic", fontFamily: "var(--font-noto)" }}>
-                                one life
-                            </span>{" "}
-                            at a time.
+                                one life at a time
+                            </span>
                         </h1>
 
                         <p style={{
@@ -388,23 +406,12 @@ export default function HeroSection({ announcements = [] }: HeroSectionProps) {
 
                 <style>{`
           @media (max-width: 767px) {
-            .stats-grid {
-              grid-template-columns: repeat(2, 1fr) !important;
-              padding: 1.5rem !important;
-            }
-            .hero-grid {
-              grid-template-columns: 1fr !important;
-              padding-bottom: 8rem !important;
-            }
-            .hero-announcement-panel {
-              display: none !important;
-            }
+            .stats-grid { grid-template-columns: repeat(2, 1fr) !important; padding: 1.5rem !important; }
+            .hero-grid { grid-template-columns: 1fr !important; padding-bottom: 8rem !important; }
+            .hero-announcement-panel { display: none !important; }
           }
           @media (min-width: 768px) and (max-width: 1023px) {
-            .hero-grid {
-              grid-template-columns: 1fr 280px !important;
-              gap: 2rem !important;
-            }
+            .hero-grid { grid-template-columns: 1fr 280px !important; gap: 2rem !important; }
           }
         `}</style>
             </div>
