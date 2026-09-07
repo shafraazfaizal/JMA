@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import type { Variants } from "framer-motion";
 import {
   Clock, Utensils, Mic2, Trophy, Award, Users,
-  MapPin, ArrowRight, Star,
+  MapPin, ArrowRight, Star, Copy, Check,
 } from "lucide-react";
 
 // ── Animation variants — ease as named string to satisfy Framer types ─────────
@@ -57,6 +57,8 @@ const sportsLinks = [
 
 const venueEncoded = encodeURIComponent("Ford Sports and Social Club, Barkingside, Ilford, IG3 8HE");
 
+const fullAddress = "Ford Sports and Social Club, Barkingside, Newbury Park, Ilford, IG3 8HE";
+
 const mapsLinks = [
   { label: "Google Maps", href: `https://www.google.com/maps/search/?api=1&query=${venueEncoded}`, bg: "rgba(26,115,232,0.15)", colour: "#60A5FA", border: "rgba(26,115,232,0.3)" },
   { label: "Apple Maps", href: `https://maps.apple.com/?q=${venueEncoded}`, bg: "rgba(21,128,61,0.15)", colour: "#4ADE80", border: "rgba(21,128,61,0.3)" },
@@ -106,6 +108,18 @@ export default function GatheringPage() {
   const ring1Y = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
   const ring2Y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
   const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
+
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyAddress = async () => {
+    try {
+      await navigator.clipboard.writeText(fullAddress);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy address:", err);
+    }
+  };
 
   return (
     <>
@@ -337,12 +351,33 @@ export default function GatheringPage() {
                   <div style={{ width: "40px", height: "40px", borderRadius: "0.75rem", backgroundColor: "rgba(201,168,76,0.12)", border: "1px solid rgba(201,168,76,0.2)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.25rem" }}>
                     <MapPin size={18} style={{ color: "#C9A84C" }} aria-hidden="true" />
                   </div>
-                  <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: "1.125rem", color: "#ffffff", lineHeight: 1.3, marginBottom: "0.625rem" }}>
-                    Ford Sports and Social Club
-                  </p>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.7, marginBottom: "1.75rem" }}>
-                    Barkingside, Newbury Park<br />Ilford, IG3 8HE
-                  </p>
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.75rem", marginBottom: "1.75rem" }}>
+                    <div>
+                      <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: "1.125rem", color: "#ffffff", lineHeight: 1.3, marginBottom: "0.625rem" }}>
+                        Ford Sports and Social Club
+                      </p>
+                      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.7 }}>
+                        Barkingside, Newbury Park<br />Ilford, IG3 8HE
+                      </p>
+                    </div>
+                    <motion.button
+                      onClick={handleCopyAddress}
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.92 }}
+                      aria-label="Copy address"
+                      style={{
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        width: "32px", height: "32px", borderRadius: "0.5rem", flexShrink: 0,
+                        backgroundColor: copied ? "rgba(74,222,128,0.15)" : "rgba(201,168,76,0.12)",
+                        border: `1px solid ${copied ? "rgba(74,222,128,0.3)" : "rgba(201,168,76,0.2)"}`,
+                        cursor: "pointer",
+                      }}
+                    >
+                      {copied
+                        ? <Check size={14} style={{ color: "#4ADE80" }} aria-hidden="true" />
+                        : <Copy size={14} style={{ color: "#C9A84C" }} aria-hidden="true" />}
+                    </motion.button>
+                  </div>
                   <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: "0.65rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: "0.625rem" }}>Open in</p>
                   <div className="maps-row" style={{ display: "flex", gap: "0.5rem" }}>
                     {mapsLinks.map(({ label, href, bg, colour, border }) => (
