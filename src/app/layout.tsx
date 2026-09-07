@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import PublicChrome from "@/components/layout/PublicChrome";
 
 export const metadata: Metadata = {
   title: {
@@ -60,7 +59,7 @@ export default function RootLayout({
         />
       </head>
       <body style={{ fontFamily: "var(--font-inter)", margin: 0 }}>
-        <PublicChrome>{children}</PublicChrome>
+        {children}
       </body>
     </html>
   );
