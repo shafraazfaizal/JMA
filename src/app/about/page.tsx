@@ -86,20 +86,20 @@ const timeline = [
 ];
 
 const team = [
-    { initials: "MF", name: "Mohamed Fazil Abdul Gaffoor", role: "President", bg: "#0D5C6B" },
-    { initials: "AK", name: "Abul Kalam Abdul Hakkeem", role: "Vice President", bg: "#073D47" },
-    { initials: "MF", name: "Mohamed Farzan Badurusaman", role: "Secretary", bg: "#1a7a8f" },
-    { initials: "SM", name: "Salman Mohamed Shawjeer", role: "Asst. Secretary", bg: "#094955" },
-    { initials: "MR", name: "Muhammathu Rozaan Faaruk", role: "Treasurer", bg: "#C9A84C" },
-    { initials: "MI", name: "Mohamed Izmee Mahroof", role: "Asst. Treasurer", bg: "#B08D35" },
-    { initials: "AJ", name: "Azankuthoos Jaeeros", role: "Board Member", bg: "#0D5C6B" },
-    { initials: "MA", name: "Mohamed Azeez Mahroof", role: "Board Member", bg: "#073D47" },
-    { initials: "MF", name: "Mohamed Faizal Farook", role: "Board Member", bg: "#1a7a8f" },
-    { initials: "MS", name: "Mohamed Shihab Sulaiman", role: "Board Member", bg: "#094955" },
-    { initials: "MH", name: "Mohamed Humaid Jawsad", role: "Board Member", bg: "#0D5C6B" },
-    { initials: "RM", name: "Rashdin Mohamed Akbar", role: "Board Member", bg: "#073D47" },
-    { initials: "FF", name: "Farraj Firthouse", role: "Board Member", bg: "#1a7a8f" },
-    { initials: "AJ", name: "Aneerkhan Jabarullah", role: "Board Member", bg: "#094955" },
+    { name: "Mohamed Fazil Abdul Gaffoor", role: "President", image: "/images/committee/fazil-gaffoor.png" },
+    { name: "Abul Kalam Abdul Hakkeem", role: "Vice President", image: "/images/committee/abdul-kalam.png" },
+    { name: "Mohamed Farzan Badurusaman", role: "Secretary", image: "/images/committee/mohamed-farzan.png" },
+    { name: "Salman Mohamed Shawjeer", role: "Asst. Secretary", image: "/images/committee/salman-mohamed.png" },
+    { name: "Muhammathu Rozaan Faaruk", role: "Treasurer", image: "/images/committee/mohammathu-rozaan.png" },
+    { name: "Mohamed Izmee Mahroof", role: "Asst. Treasurer", image: "/images/committee/mohamed-izmee.png" },
+    { name: "Azankuthoos Jaeeros", role: "Board Member", image: "/images/committee/azankuthoos.png" },
+    { name: "Mohamed Azeez Mahroof", role: "Board Member", image: "/images/committee/mohamed-azeez.png" },
+    { name: "Mohamed Faizal Farook", role: "Board Member", image: "/images/committee/mohamed-faizal.png" },
+    { name: "Mohamed Shihab Sulaiman", role: "Board Member", image: "/images/committee/mohamed-shihab.png" },
+    { name: "Mohamed Humaid Jawsad", role: "Board Member", image: "/images/committee/mohamed-humaid.png" },
+    { name: "Rashdin Mohamed Akbar", role: "Board Member", image: "/images/committee/rashdin.png" },
+    { name: "Farraj Firthouse", role: "Board Member", image: "/images/committee/farraj.png" },
+    { name: "Aneerkhan Jabarullah", role: "Board Member", image: "/images/committee/aneerkhan.png" },
 ];
 
 const governanceDetails = [
@@ -858,7 +858,7 @@ export default function AboutPage() {
                         }}
                         className="team-grid"
                     >
-                        {team.map(({ initials, name, role, bg }) => (
+                        {team.map(({ name, role, image }) => (
                             <div
                                 key={name + role}
                                 style={{
@@ -884,25 +884,17 @@ export default function AboutPage() {
                                     el.style.borderColor = "#E5E7EB";
                                 }}
                             >
-                                <div
+                                <img
+                                    src={image}
+                                    alt={name}
                                     style={{
-                                        width: "56px",
-                                        height: "56px",
+                                        width: "80px",
+                                        height: "80px",
                                         borderRadius: "50%",
-                                        backgroundColor: bg,
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        fontFamily: "var(--font-jakarta)",
-                                        fontWeight: 800,
-                                        fontSize: "1rem",
-                                        color: "#ffffff",
+                                        objectFit: "cover" as const,
                                         flexShrink: 0,
-                                        letterSpacing: "0.02em",
                                     }}
-                                >
-                                    {initials}
-                                </div>
+                                />
                                 <div>
                                     <p
                                         style={{

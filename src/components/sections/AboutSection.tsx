@@ -194,7 +194,7 @@ export default function AboutSection() {
                             marginBottom: "1.5rem",
                         }}
                     >
-                        Rooted in Jaffna.{" "}
+                        Rooted in Sri Lanka.{" "}
                         <span
                             style={{
                                 color: "#0D5C6B",
@@ -204,7 +204,7 @@ export default function AboutSection() {
                         >
                             Working
                         </span>{" "}
-                        for Jaffna.
+                        for Sri Lanka.
                     </h2>
 
                     {/* Body copy */}
@@ -218,7 +218,7 @@ export default function AboutSection() {
                         }}
                     >
                         The Jaffna Muslim Association was founded in 2002 by members of the
-                        Jaffna Muslim diaspora who resettled in the United Kingdom following
+                        Jaffna Muslim Community who resettled in the United Kingdom following
                         the civil conflict in Sri Lanka. Though they built new lives here,
                         their hearts remained with the community they left behind.
                     </p>
@@ -232,7 +232,7 @@ export default function AboutSection() {
                         }}
                     >
                         Over two decades, JMA has channelled the generosity of the UK
-                        diaspora into tangible, lasting change — rebuilding masjids,
+                        Community into tangible, lasting change — rebuilding masjids,
                         sponsoring education, funding healthcare, and standing with families
                         through emergencies. Every project is volunteer-run. Every penny
                         reaches the ground.

@@ -1,8 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { DBNewsArticle } from "@/types/database";
 
-// Re-exported so existing imports of slugify/estimateReadTime from
-// "@/lib/admin/news" keep working without changes elsewhere.
 export { slugify, estimateReadTime } from "@/lib/admin/news-utils";
 
 // ============================================
@@ -17,7 +15,7 @@ export async function getAllNewsArticles(): Promise<DBNewsArticle[]> {
         .order("published_at", { ascending: false });
 
     if (error) {
-        console.error("[getAllNewsArticles]", error);
+        console.error("[getAllNewsArticles]", error.message);
         return [];
     }
     return data ?? [];
@@ -29,13 +27,13 @@ export async function getNewsArticleBySlug(slug: string): Promise<DBNewsArticle 
         .from("news_articles")
         .select("*")
         .eq("slug", slug)
-        .single();
+        .maybeSingle(); // ← was .single() which throws when no row found
 
     if (error) {
-        console.error("[getNewsArticleBySlug]", error);
+        console.error("[getNewsArticleBySlug]", error.message);
         return null;
     }
-    return data;
+    return data ?? null;
 }
 
 export async function getNewsArticleById(id: string): Promise<DBNewsArticle | null> {
@@ -44,13 +42,13 @@ export async function getNewsArticleById(id: string): Promise<DBNewsArticle | nu
         .from("news_articles")
         .select("*")
         .eq("id", id)
-        .single();
+        .maybeSingle(); // ← same fix for consistency
 
     if (error) {
-        console.error("[getNewsArticleById]", error);
+        console.error("[getNewsArticleById]", error.message);
         return null;
     }
-    return data;
+    return data ?? null;
 }
 
 // ============================================

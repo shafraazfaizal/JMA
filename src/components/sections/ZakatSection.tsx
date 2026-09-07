@@ -172,7 +172,7 @@ export default function ZakatSection() {
                     >
                         Zakat is one of the five pillars of Islam — an obligation to give
                         2.5% of your eligible wealth to those in need. JMA distributes
-                        Zakat directly to eligible families in Jaffna with full
+                        Zakat directly to eligible families in Sri Lanka with full
                         transparency.
                     </p>
 
@@ -375,8 +375,8 @@ export default function ZakatSection() {
                                             padding: "0.6875rem 0.875rem 0.6875rem 1.75rem",
                                             borderRadius: "0.5rem",
                                             border: `1.5px solid ${inputs[key]
-                                                    ? "rgba(201,168,76,0.6)"
-                                                    : "rgba(255,255,255,0.12)"
+                                                ? "rgba(201,168,76,0.6)"
+                                                : "rgba(255,255,255,0.12)"
                                                 }`,
                                             backgroundColor: "rgba(255,255,255,0.06)",
                                             fontFamily: "var(--font-jakarta)",
@@ -421,10 +421,10 @@ export default function ZakatSection() {
                                     : "rgba(255,255,255,0.05)"
                                 : "rgba(255,255,255,0.03)",
                             border: `1.5px solid ${hasAnyInput
-                                    ? result.isAbove
-                                        ? "rgba(201,168,76,0.4)"
-                                        : "rgba(255,255,255,0.1)"
-                                    : "rgba(255,255,255,0.07)"
+                                ? result.isAbove
+                                    ? "rgba(201,168,76,0.4)"
+                                    : "rgba(255,255,255,0.1)"
+                                : "rgba(255,255,255,0.07)"
                                 }`,
                             borderRadius: "0.75rem",
                             padding: "1.375rem",
