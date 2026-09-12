@@ -215,6 +215,24 @@ export default function Footer() {
       <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", padding: "1.25rem 1.5rem" }}>
         <div style={{ maxWidth: "80rem", margin: "0 auto", display: "flex", flexWrap: "wrap" as const, alignItems: "center", justifyContent: "space-between", gap: "0.5rem", fontSize: "0.8125rem", color: "rgba(255,255,255,0.4)" }}>
           <span>© {new Date().getFullYear()} Jaffna Muslim Association. All rights reserved.</span>
+
+          {/* Flags — centred between copyright and built by */}
+          <video
+            src="/video/flags-loop.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{
+              display: "block",
+              width: "72px",
+              height: "30px",
+              objectFit: "cover",
+              borderRadius: "0.25rem",
+              mixBlendMode: "screen",
+            }}
+          />
+
           <span style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
             Built by{" "}
             <a
