@@ -77,18 +77,52 @@ export default function Footer() {
 
           {/* Brand column */}
           <div style={{ gridColumn: "span 1" }}>
-            <Link href="/" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none", marginBottom: "1.5rem" }}>
+            <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: "0.75rem", textDecoration: "none", marginBottom: "1.5rem" }}>
               <Image
                 src="/logo/logo.svg"
                 alt="Jaffna Muslim Association"
                 width={200}
                 height={52}
-                style={{ display: "block", height: "48px", width: "auto" }}
+                style={{ display: "block", height: "48px", width: "auto", flexShrink: 0 }}
               />
+              <span style={{
+                fontFamily: "helvetica",
+                fontStyle: "bold",
+                fontSize: "0.8rem",
+                lineHeight: 1.25,
+                display: "flex",
+                flexDirection: "column" as const,
+                whiteSpace: "nowrap" as const,
+                letterSpacing: "0.08em",
+              }}>
+                <span>
+                  <span style={{ color: "#C9A84C", fontWeight: 600 }}>J</span>
+                  <span style={{ color: "#ffffff", fontWeight: 400 }}>affna</span>
+                </span>
+                <span>
+                  <span style={{ color: "#C9A84C", fontWeight: 600 }}>M</span>
+                  <span style={{ color: "#ffffff", fontWeight: 400 }}>uslim</span>
+                </span>
+                <span>
+                  <span style={{ color: "#C9A84C", fontWeight: 600 }}>A</span>
+                  <span style={{ color: "#ffffff", fontWeight: 400 }}>ssociation</span>
+                </span>
+                <span style={{
+                  color: "#C9A84C",
+                  fontWeight: 600,
+                  fontSize: "0.6rem",
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase" as const,
+                  marginTop: "0.1rem",
+                  opacity: 0.85,
+                }}>
+                  United Kingdom
+                </span>
+              </span>
             </Link>
 
             <p style={{ fontSize: "0.875rem", lineHeight: 1.7, marginBottom: "1rem", color: "rgba(255,255,255,0.65)" }}>
-              Serving the Sri Lankan community across two nations.
+              Serving humanity — one life at a time.
             </p>
 
             <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.45)", marginBottom: "1.5rem" }}>

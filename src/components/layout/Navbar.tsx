@@ -129,6 +129,17 @@ export default function Navbar() {
                 <span style={{ color: "#C9A84C", fontWeight: 600 }}>A</span>
                 <span style={{ color: "#ffffff", fontWeight: 400 }}>ssociation</span>
               </span>
+              <span style={{
+                color: "#C9A84C",
+                fontWeight: 600,
+                fontSize: "0.6rem",
+                letterSpacing: "0.18em",
+                textTransform: "uppercase" as const,
+                marginTop: "0.1rem",
+                opacity: 0.85,
+              }}>
+                United Kingdom
+              </span>
             </span>
           </Link>
 
