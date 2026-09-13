@@ -2,8 +2,8 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { Pencil, Trash2, ExternalLink, AlertTriangle, Image as ImageIcon, Video } from "lucide-react";
-import { deleteAlbumAction } from "@/app/admin/gallery/actions";
+import { Pencil, Trash2, ExternalLink, AlertTriangle, Image as ImageIcon, Video, Star } from "lucide-react";
+import { deleteAlbumAction, toggleFeaturedAction } from "@/app/admin/gallery/actions";
 import type { GalleryAlbumWithPhotos } from "@/types/gallery-database";
 
 const categoryColours: Record<string, { bg: string; text: string }> = {
@@ -16,6 +16,15 @@ const categoryColours: Record<string, { bg: string; text: string }> = {
 export default function AlbumRow({ album, isLast }: { album: GalleryAlbumWithPhotos; isLast: boolean }) {
     const [confirmingDelete, setConfirmingDelete] = useState(false);
     const [isPending, startTransition] = useTransition();
+    const [isFeatured, setIsFeatured] = useState(album.is_featured ?? false);
+    const [featuredPending, startFeaturedTransition] = useTransition();
+
+    const handleToggleFeatured = () => {
+        startFeaturedTransition(async () => {
+            setIsFeatured((prev: boolean) => !prev);
+            await toggleFeaturedAction(album.id, isFeatured);
+        });
+    };
     const colour = categoryColours[album.category] ?? { bg: "#F3F4F6", text: "#374151" };
     const thumbnail = album.media_type === "video" ? album.youtube_thumbnail_url : album.cover_image_url;
 
@@ -85,6 +94,27 @@ export default function AlbumRow({ album, isLast }: { album: GalleryAlbumWithPho
                 </div>
             ) : (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexShrink: 0 }}>
+                    {/* Feature on homepage toggle */}
+                    <button
+                        onClick={handleToggleFeatured}
+                        disabled={featuredPending}
+                        title={isFeatured ? "Remove from homepage showcase" : "Feature on homepage"}
+                        style={{
+                            width: "34px", height: "34px", borderRadius: "0.5rem",
+                            border: isFeatured ? "1.5px solid #C9A84C" : "1.5px solid #E5E7EB",
+                            backgroundColor: isFeatured ? "#FAF5E8" : "#ffffff",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            color: isFeatured ? "#C9A84C" : "#D1D5DB",
+                            cursor: featuredPending ? "wait" : "pointer",
+                            transition: "all 0.2s ease",
+                        }}
+                    >
+                        <Star
+                            size={15}
+                            aria-hidden="true"
+                            style={{ fill: isFeatured ? "#C9A84C" : "none" }}
+                        />
+                    </button>
                     <a href="/gallery" target="_blank" rel="noopener noreferrer" title="View live gallery" style={{ width: "34px", height: "34px", borderRadius: "0.5rem", border: "1.5px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "center", color: "#6B7280", textDecoration: "none" }}>
                         <ExternalLink size={15} aria-hidden="true" />
                     </a>

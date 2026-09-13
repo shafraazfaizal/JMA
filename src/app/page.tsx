@@ -14,15 +14,17 @@ import { getAnnouncementFeed } from "@/lib/announcements-feed";
 import { getAllNewsArticles } from "@/lib/admin/news";
 import { getAllEvents } from "@/lib/admin/events";
 import { getAllCampaigns } from "@/lib/admin/campaigns";
+import { getFeaturedMedia } from "@/lib/admin/featured-media";
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [announcements, articles, events, campaigns] = await Promise.all([
+  const [announcements, articles, events, campaigns, featuredMedia] = await Promise.all([
     getAnnouncementFeed(),
     getAllNewsArticles(),
     getAllEvents(),
     getAllCampaigns(),
+    getFeaturedMedia(),
   ]);
 
   const activeCampaigns = campaigns.filter(
@@ -36,7 +38,7 @@ export default async function HomePage() {
 
   return (
     <main>
-      <HeroSection announcements={announcements} />
+      <HeroSection announcements={announcements} featuredMedia={featuredMedia} />
       <div style={{ paddingTop: "20px" }} />
       <CampaignBanner campaign={bannerCampaign} />
       <DonationSection />

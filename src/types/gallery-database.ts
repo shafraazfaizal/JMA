@@ -9,6 +9,7 @@ export interface DBGalleryAlbum {
     youtube_url: string | null;
     youtube_thumbnail_url: string | null;
     display_order: number;
+    is_featured: boolean;
     created_at: string;
     updated_at: string;
 }
