@@ -55,16 +55,22 @@ export const navLinks: NavItem[] = [
   { label: "Campaigns", href: "/campaigns" },
   { label: "Impact", href: "/impact" },
   { label: "Zakat", href: "/zakat" },
-  { label: "Khardal Hasana", href: "/khardal-hasana" },
   {
     label: "Updates",
     items: [
       { label: "News & Newsletter", href: "/news" },
       { label: "Blog", href: "/blog" },
-      { label: "Events", href: "/events" },
     ],
   },
-  { label: "Membership", href: "/membership" },
+  {
+    label: "Community",
+    items: [
+      { label: "Membership", href: "/membership" },
+      { label: "Events", href: "/events" },
+      { label: "Khardal Hasana", href: "/khardal-hasana" },
+    ],
+  },
+  { label: "Project Request", href: "/projects/submit" }
 ];
 
 export const heroStats: StatItem[] = [
