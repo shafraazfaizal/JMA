@@ -116,7 +116,7 @@ export default function ProjectSubmitPage() {
         <div style={{ minHeight: "100vh", backgroundColor: "#F9FAFB" }}>
 
             {/* Header */}
-            <div style={{ backgroundColor: "#073D47", padding: "6rem 1.5rem 3rem" }}>
+            <div style={{ backgroundColor: "#073D47", padding: "8rem 1.5rem 3rem" }}>
                 <div style={{ maxWidth: "48rem", margin: "0 auto" }}>
                     <p style={{ fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "#C9A84C", marginBottom: "0.75rem" }}>
                         Project Request

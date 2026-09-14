@@ -40,7 +40,7 @@ export default function Navbar() {
       <div
         style={{
           position: "fixed",
-          top: "0.875rem",
+          top: "2rem",
           left: "50%",
           transform: "translateX(-50%)",
           width: "calc(100% - 2.5rem)",

@@ -404,7 +404,7 @@ export default function HeroSection({ announcements = [], featuredMedia = [] }: 
                         padding: "8rem 1.5rem 10rem", width: "100%",
                         display: "grid",
                         gridTemplateColumns: hasRightPanel ? "1fr 400px" : "1fr",
-                        gap: "3rem",
+                        gap: "6rem",
                         alignItems: "center",
                     }}
                 >
