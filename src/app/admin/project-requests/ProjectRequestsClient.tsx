@@ -4,9 +4,9 @@ import { useState, useTransition } from "react";
 import {
     Clock, Eye, CheckCircle, XCircle, RefreshCw,
     MapPin, Users, PoundSterling, AlertTriangle,
-    FileText, Mail, Phone, ExternalLink,
+    FileText, Mail, Phone, ExternalLink, Trash2,
 } from "lucide-react";
-import { updateProjectRequestStatusAction } from "./actions";
+import { updateProjectRequestStatusAction, deleteProjectRequestAction } from "./actions";
 
 type Status = "pending" | "under_review" | "approved" | "declined";
 
@@ -43,7 +43,7 @@ const urgencyColour: Record<string, string> = {
     Low: "#34D399", Medium: "#FBBF24", Urgent: "#F87171",
 };
 
-const filterOptions: { value: string; label: string }[] = [
+const filterOptions = [
     { value: "all", label: "All Requests" },
     { value: "pending", label: "Pending" },
     { value: "under_review", label: "Under Review" },
@@ -55,10 +55,16 @@ function fmtDate(iso: string) {
     return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
-function RequestCard({ req, onStatusChange }: { req: ProjectRequest; onStatusChange: (id: string, status: Status, notes: string) => void }) {
+function RequestCard({ req, onStatusChange, onDelete }: {
+    req: ProjectRequest;
+    onStatusChange: (id: string, status: Status, notes: string) => void;
+    onDelete: (id: string) => void;
+}) {
     const [expanded, setExpanded] = useState(false);
     const [notes, setNotes] = useState(req.admin_notes ?? "");
     const [isPending, startTransition] = useTransition();
+    const [confirmingDelete, setConfirmingDelete] = useState(false);
+    const [deletePending, startDeleteTransition] = useTransition();
     const cfg = statusConfig[req.status];
     const StatusIcon = cfg.icon;
 
@@ -69,11 +75,19 @@ function RequestCard({ req, onStatusChange }: { req: ProjectRequest; onStatusCha
         });
     };
 
+    const handleDelete = () => {
+        startDeleteTransition(async () => {
+            await deleteProjectRequestAction(req.id);
+            onDelete(req.id);
+        });
+    };
+
     return (
         <div style={{
             backgroundColor: "#ffffff", borderRadius: "0.875rem",
             border: "1px solid #E5E7EB", overflow: "hidden",
-            opacity: isPending ? 0.6 : 1, transition: "opacity 0.2s ease",
+            opacity: isPending || deletePending ? 0.6 : 1,
+            transition: "opacity 0.2s ease",
         }}>
             {/* Card header */}
             <div style={{ padding: "1.25rem 1.5rem", display: "flex", alignItems: "flex-start", gap: "1rem", flexWrap: "wrap" as const }}>
@@ -96,12 +110,42 @@ function RequestCard({ req, onStatusChange }: { req: ProjectRequest; onStatusCha
                     </div>
                 </div>
 
-                <button
-                    onClick={() => setExpanded(!expanded)}
-                    style={{ padding: "0.5rem 0.875rem", borderRadius: "0.375rem", border: "1.5px solid #E5E7EB", backgroundColor: "#ffffff", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.8125rem", color: "#374151", cursor: "pointer", flexShrink: 0 }}
-                >
-                    {expanded ? "Close" : "View Details"}
-                </button>
+                {/* Actions */}
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexShrink: 0 }}>
+                    <button
+                        onClick={() => setExpanded(!expanded)}
+                        style={{ padding: "0.5rem 0.875rem", borderRadius: "0.375rem", border: "1.5px solid #E5E7EB", backgroundColor: "#ffffff", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.8125rem", color: "#374151", cursor: "pointer" }}
+                    >
+                        {expanded ? "Close" : "View"}
+                    </button>
+
+                    {/* Delete button */}
+                    {confirmingDelete ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
+                            <button
+                                onClick={handleDelete}
+                                disabled={deletePending}
+                                style={{ padding: "0.5rem 0.875rem", borderRadius: "0.375rem", border: "none", backgroundColor: "#DC2626", color: "#ffffff", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.8125rem", cursor: "pointer" }}
+                            >
+                                Confirm Delete
+                            </button>
+                            <button
+                                onClick={() => setConfirmingDelete(false)}
+                                style={{ padding: "0.5rem 0.875rem", borderRadius: "0.375rem", border: "1.5px solid #E5E7EB", backgroundColor: "#ffffff", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.8125rem", color: "#374151", cursor: "pointer" }}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={() => setConfirmingDelete(true)}
+                            title="Delete request"
+                            style={{ width: "34px", height: "34px", borderRadius: "0.375rem", border: "1.5px solid #FECACA", backgroundColor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center", color: "#DC2626", cursor: "pointer" }}
+                        >
+                            <Trash2 size={15} aria-hidden="true" />
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Expanded details */}
@@ -169,8 +213,8 @@ function RequestCard({ req, onStatusChange }: { req: ProjectRequest; onStatusCha
                                     disabled={req.status === status || isPending}
                                     style={{
                                         display: "flex", alignItems: "center", gap: "0.375rem",
-                                        padding: "0.5625rem 1rem", borderRadius: "0.5rem",
-                                        border: "none", backgroundColor: req.status === status ? bg : "#F3F4F6",
+                                        padding: "0.5625rem 1rem", borderRadius: "0.5rem", border: "none",
+                                        backgroundColor: req.status === status ? bg : "#F3F4F6",
                                         color: req.status === status ? text : "#6B7280",
                                         fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.8125rem",
                                         cursor: req.status === status || isPending ? "default" : "pointer",
@@ -207,6 +251,10 @@ export default function ProjectRequestsClient({ requests: initial }: { requests:
         setRequests((prev) => prev.map((r) => r.id === id ? { ...r, status, admin_notes: notes } : r));
     };
 
+    const handleDelete = (id: string) => {
+        setRequests((prev) => prev.filter((r) => r.id !== id));
+    };
+
     return (
         <div>
             <div style={{ marginBottom: "2rem" }}>
@@ -238,8 +286,8 @@ export default function ProjectRequestsClient({ requests: initial }: { requests:
                         <span style={{
                             backgroundColor: filter === value ? "rgba(255,255,255,0.2)" : "#F3F4F6",
                             color: filter === value ? "#ffffff" : "#6B7280",
-                            fontWeight: 700, fontSize: "0.7rem", padding: "0.1rem 0.5rem",
-                            borderRadius: "9999px",
+                            fontWeight: 700, fontSize: "0.7rem",
+                            padding: "0.1rem 0.5rem", borderRadius: "9999px",
                         }}>
                             {counts[value as keyof typeof counts]}
                         </span>
@@ -257,7 +305,12 @@ export default function ProjectRequestsClient({ requests: initial }: { requests:
             ) : (
                 <div style={{ display: "flex", flexDirection: "column" as const, gap: "0.875rem" }}>
                     {filtered.map((req) => (
-                        <RequestCard key={req.id} req={req} onStatusChange={handleStatusChange} />
+                        <RequestCard
+                            key={req.id}
+                            req={req}
+                            onStatusChange={handleStatusChange}
+                            onDelete={handleDelete}
+                        />
                     ))}
                 </div>
             )}
