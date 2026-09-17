@@ -372,7 +372,7 @@ export default function HeroSection({ announcements = [], featuredMedia = [] }: 
         <>
             <section style={{
                 position: "relative",
-                minHeight: "100vh",
+                minHeight: "100dvh", //100vh
                 display: "flex",
                 flexDirection: "column" as const,
                 justifyContent: "center",
@@ -555,10 +555,19 @@ export default function HeroSection({ announcements = [], featuredMedia = [] }: 
                         from { width: 0%; }
                         to   { width: 100%; }
                     }
+                    // @media (max-width: 767px) {
+                    //     .stats-grid { grid-template-columns: repeat(2, 1fr) !important; padding: 1.5rem !important; }
+                    //     .hero-grid { grid-template-columns: 1fr !important; padding-top: 5rem !important; padding-bottom: 8rem !important; }
+                    //     .hero-right-panel { display: none !important; }
+                    // }
                     @media (max-width: 767px) {
                         .stats-grid { grid-template-columns: repeat(2, 1fr) !important; padding: 1.5rem !important; }
                         .hero-grid { grid-template-columns: 1fr !important; padding-top: 5rem !important; padding-bottom: 8rem !important; }
                         .hero-right-panel { display: none !important; }
+                        .hero-section-mobile { 
+                            min-height: auto !important;
+                            justify-content: flex-start !important;
+                        }
                     }
                     @media (min-width: 768px) and (max-width: 1023px) {
                         .hero-grid { grid-template-columns: 1fr 300px !important; gap: 2rem !important; }
