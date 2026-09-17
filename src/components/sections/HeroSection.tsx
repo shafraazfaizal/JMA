@@ -492,6 +492,13 @@ export default function HeroSection({ announcements = [], featuredMedia = [] }: 
                                 </div>
                             ))}
                         </div>
+
+                        {/* Announcement strip — mobile only, hidden on desktop */}
+                        {announcements.length > 0 && (
+                            <div className="hero-mobile-announcements" style={{ display: "none", marginTop: "1.5rem" }}>
+                                <AnnouncementStrip announcements={announcements} />
+                            </div>
+                        )}
                     </div>
 
                     {/* Right: media carousel + announcement strip */}
@@ -562,8 +569,9 @@ export default function HeroSection({ announcements = [], featuredMedia = [] }: 
                     // }
                     @media (max-width: 767px) {
                         .stats-grid { grid-template-columns: repeat(2, 1fr) !important; padding: 1.5rem !important; }
-                        .hero-grid { grid-template-columns: 1fr !important; padding-top: 5rem !important; padding-bottom: 8rem !important; }
+                        .hero-grid { grid-template-columns: 1fr !important; padding-top: 7rem !important; padding-bottom: 6rem !important; }
                         .hero-right-panel { display: none !important; }
+                        .hero-mobile-announcements { display: block !important; }
                         .hero-section-mobile { 
                             min-height: auto !important;
                             justify-content: flex-start !important;
