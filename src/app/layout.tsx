@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     siteName: "Jaffna Muslim Association",
     title: "Jaffna Muslim Association — UK Registered Charity",
     description:
-      "Serving the Jaffna Muslim community across two nations. Donate today — 100% reaches the ground.",
+      "Serving humanity,one life ata time.",
   },
   twitter: {
     card: "summary_large_image",
