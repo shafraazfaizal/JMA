@@ -22,30 +22,43 @@ function AnimatedNumber({ value, duration = 2 }: { value: number; duration?: num
 
 // ── Particle ──────────────────────────────────────────────────────────────────
 function GoldParticle({ delay }: { delay: number }) {
-    const size = Math.random() * 3 + 1;
-    const x = Math.random() * 100;
-    const duration = Math.random() * 8 + 6;
+    const [props, setProps] = useState<{
+        size: number; x: number; duration: number; yTravel: number; xDrift: number; scaleMax: number;
+    } | null>(null);
+
+    useEffect(() => {
+        setProps({
+            size: Math.random() * 3 + 1,
+            x: Math.random() * 100,
+            duration: Math.random() * 8 + 6,
+            yTravel: -(Math.random() * 600 + 400),
+            xDrift: (Math.random() - 0.5) * 100,
+            scaleMax: Math.random() * 1.5 + 0.5,
+        });
+    }, []);
+
+    if (!props) return null;
 
     return (
         <motion.div
             style={{
                 position: "absolute",
-                left: `${x}%`,
+                left: `${props.x}%`,
                 bottom: "-10px",
-                width: `${size}px`,
-                height: `${size}px`,
+                width: `${props.size}px`,
+                height: `${props.size}px`,
                 borderRadius: "50%",
                 backgroundColor: "#C9A84C",
                 opacity: 0,
             }}
             animate={{
-                y: [0, -(Math.random() * 600 + 400)],
-                x: [0, (Math.random() - 0.5) * 100],
+                y: [0, props.yTravel],
+                x: [0, props.xDrift],
                 opacity: [0, 0.8, 0],
-                scale: [1, Math.random() * 1.5 + 0.5, 0],
+                scale: [1, props.scaleMax, 0],
             }}
             transition={{
-                duration,
+                duration: props.duration,
                 delay,
                 repeat: Infinity,
                 ease: "easeOut",
@@ -74,7 +87,7 @@ export default function LaunchReveal() {
     const handleLaunch = () => {
         setPhase("launching");
         setTimeout(() => setLaunched(true), 1200);
-        setTimeout(() => router.push("/"), 3000);
+        setTimeout(() => router.push("/home"), 3000);
     };
 
     const particles = Array.from({ length: 40 }, (_, i) => (
