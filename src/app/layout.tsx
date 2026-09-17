@@ -45,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <head>
         {/* Google Fonts — loaded via <link>, NOT next/font */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
