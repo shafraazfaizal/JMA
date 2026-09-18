@@ -7,7 +7,7 @@
 
 @theme {
   /* Brand Colours */
-  --color-teal-50:  #E8F4F6;
+  --color-teal-50: #E8F4F6;
   --color-teal-100: #C8E5EA;
   --color-teal-200: #A0CDD5;
   --color-teal-300: #6BAFC0;
@@ -19,7 +19,7 @@
   --color-teal-900: #031F25;
   --color-teal-950: #0a3d47;
 
-  --color-gold-50:  #FAF5E8;
+  --color-gold-50: #FAF5E8;
   --color-gold-100: #F4E8C4;
   --color-gold-200: #EDD89A;
   --color-gold-300: #E4C56A;
@@ -29,7 +29,7 @@
   --color-gold-700: #6D551A;
 
   /* Neutral */
-  --color-neutral-50:  #F9FAFB;
+  --color-neutral-50: #F9FAFB;
   --color-neutral-100: #F3F4F6;
   --color-neutral-200: #E5E7EB;
   --color-neutral-300: #D1D5DB;
@@ -62,7 +62,9 @@
    GLOBAL BASE STYLES
    ============================================ */
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -80,7 +82,12 @@ body {
 }
 
 /* Typography defaults */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-jakarta);
   font-weight: 700;
   line-height: 1.2;
@@ -104,9 +111,17 @@ h1, h2, h3, h4, h5, h6 {
    UTILITY CLASSES
    ============================================ */
 
-.font-jakarta { font-family: var(--font-jakarta); }
-.font-inter   { font-family: var(--font-inter); }
-.font-noto    { font-family: var(--font-noto); }
+.font-jakarta {
+  font-family: var(--font-jakarta);
+}
+
+.font-inter {
+  font-family: var(--font-inter);
+}
+
+.font-noto {
+  font-family: var(--font-noto);
+}
 
 /* Section padding */
 .section-padding {

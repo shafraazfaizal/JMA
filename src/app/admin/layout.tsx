@@ -7,7 +7,7 @@ import { useState } from "react";
 import {
     LayoutDashboard, Megaphone, Flag, Newspaper, PenSquare,
     Calendar, TrendingUp, Image as ImageIcon, LogOut,
-    ExternalLink, ChevronLeft, ChevronRight,
+    ExternalLink, ChevronLeft, ChevronRight, ClipboardList, Mail,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -20,6 +20,8 @@ const navItems = [
     { href: "/admin/events", label: "Events", icon: Calendar },
     { href: "/admin/impact", label: "Impact Page", icon: TrendingUp },
     { href: "/admin/gallery", label: "Gallery", icon: ImageIcon },
+    { href: "/admin/project-requests", label: "Project Requests", icon: ClipboardList },
+    { href: "/admin/newsletter", label: "Subscribers", icon: Mail },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

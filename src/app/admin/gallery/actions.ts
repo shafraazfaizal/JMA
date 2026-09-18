@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import {
     createAlbum,
     updateAlbum,
@@ -136,4 +137,16 @@ export async function deleteAlbumAction(id: string) {
     await deleteAlbum(id);
     revalidatePath("/gallery");
     revalidatePath("/admin/gallery");
+}
+
+export async function toggleFeaturedAction(id: string, current: boolean) {
+    const supabase = await createClient();
+    const { error } = await supabase
+        .from("gallery_albums")
+        .update({ is_featured: !current })
+        .eq("id", id);
+
+    if (error) throw new Error(error.message);
+    revalidatePath("/admin/gallery");
+    revalidatePath("/");
 }

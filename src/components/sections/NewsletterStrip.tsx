@@ -1,28 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Send, CheckCircle } from "lucide-react";
+import { subscribeToNewsletterAction } from "@/app/newsletter/actions";
 
 export default function NewsletterStrip() {
     const [email, setEmail] = useState("");
     const [submitted, setSubmitted] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [alreadySubscribed, setAlreadySubscribed] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [error, setError] = useState("");
 
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         const trimmed = email.trim();
         if (!trimmed || !trimmed.includes("@")) {
             setError("Please enter a valid email address.");
             return;
         }
-
-        setLoading(true);
         setError("");
-
-        // Placeholder — wire to Resend once /api/newsletter is built
-        await new Promise((r) => setTimeout(r, 900));
-        setLoading(false);
-        setSubmitted(true);
+        startTransition(async () => {
+            const result = await subscribeToNewsletterAction(trimmed);
+            if (result.success) {
+                setSubmitted(true);
+            } else if (result.alreadySubscribed) {
+                setAlreadySubscribed(true);
+                setSubmitted(true);
+            } else {
+                setError(result.error ?? "Something went wrong. Please try again.");
+            }
+        });
     };
 
     return (
@@ -134,7 +140,7 @@ export default function NewsletterStrip() {
                                         marginBottom: "0.25rem",
                                     }}
                                 >
-                                    You&apos;re subscribed — جزاك الله خيرا
+                                    {alreadySubscribed ? "Already subscribed!" : "You're subscribed — Thank You"}
                                 </p>
                                 <p
                                     style={{
@@ -143,7 +149,9 @@ export default function NewsletterStrip() {
                                         color: "rgba(255,255,255,0.55)",
                                     }}
                                 >
-                                    Check your inbox for a confirmation email.
+                                    {alreadySubscribed
+                                        ? "This email is already on our list. Thank You for your support."
+                                        : "Check your inbox for a welcome email."}
                                 </p>
                             </div>
                         </div>
@@ -173,8 +181,8 @@ export default function NewsletterStrip() {
                                         padding: "0.75rem 1rem",
                                         borderRadius: "0.5rem",
                                         border: `1.5px solid ${error
-                                                ? "rgba(239,68,68,0.7)"
-                                                : "rgba(255,255,255,0.15)"
+                                            ? "rgba(239,68,68,0.7)"
+                                            : "rgba(255,255,255,0.15)"
                                             }`,
                                         backgroundColor: "rgba(255,255,255,0.08)",
                                         fontFamily: "var(--font-inter)",
@@ -196,7 +204,7 @@ export default function NewsletterStrip() {
                                 />
                                 <button
                                     onClick={handleSubmit}
-                                    disabled={loading}
+                                    disabled={isPending}
                                     style={{
                                         display: "inline-flex",
                                         alignItems: "center",
@@ -204,29 +212,29 @@ export default function NewsletterStrip() {
                                         padding: "0.75rem 1.5rem",
                                         borderRadius: "0.5rem",
                                         border: "none",
-                                        backgroundColor: loading ? "#B08D35" : "#C9A84C",
+                                        backgroundColor: isPending ? "#B08D35" : "#C9A84C",
                                         color: "#ffffff",
                                         fontFamily: "var(--font-inter)",
                                         fontWeight: 600,
                                         fontSize: "0.9375rem",
-                                        cursor: loading ? "not-allowed" : "pointer",
+                                        cursor: isPending ? "not-allowed" : "pointer",
                                         transition: "background-color 0.2s ease",
                                         flexShrink: 0,
                                         whiteSpace: "nowrap" as const,
                                     }}
                                     onMouseEnter={(e) => {
-                                        if (!loading)
+                                        if (!isPending)
                                             (e.currentTarget as HTMLButtonElement).style.backgroundColor =
                                                 "#B08D35";
                                     }}
                                     onMouseLeave={(e) => {
-                                        if (!loading)
+                                        if (!isPending)
                                             (e.currentTarget as HTMLButtonElement).style.backgroundColor =
                                                 "#C9A84C";
                                     }}
                                 >
                                     <Send size={15} aria-hidden="true" />
-                                    {loading ? "Subscribing…" : "Subscribe"}
+                                    {isPending ? "Subscribing…" : "Subscribe"}
                                 </button>
                             </div>
 

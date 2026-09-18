@@ -88,24 +88,28 @@ export default function PresidentMessage() {
                             className="president-photo-ring"
                         >
                             {/* Inner ring */}
-                            <div style={{
-                                width: "100%",
-                                height: "100%",
-                                borderRadius: "50%",
-                                border: "1px solid rgba(201,168,76,0.15)",
-                                overflow: "hidden",
-                                position: "relative",
-                            }}>
+                            <div
+                                className="president-photo-inner"
+                                style={{
+                                    width: "264px",
+                                    height: "264px",
+                                    borderRadius: "50%",
+                                    border: "1px solid rgba(201,168,76,0.15)",
+                                    overflow: "hidden",
+                                    position: "relative",
+                                    flexShrink: 0,
+                                }}>
                                 <Image
                                     src="/images/committee/fazil-gaffoor.png"
                                     alt="Mohamed Fazil Abdul Gaffoor — President, JMA"
                                     fill
-                                    style={{ objectFit: "cover" }}
+                                    sizes="(max-width: 767px) 188px, 264px"
+                                    style={{ objectFit: "cover", objectPosition: "center 15%", transform: "scale(1.2)", transformOrigin: "center 20%" }}
                                 />
                             </div>
                         </div>
 
-                        {/* Gold accent dot */}
+                        {/* Gold accent dot
                         <div style={{
                             position: "absolute",
                             bottom: "16px",
@@ -116,7 +120,7 @@ export default function PresidentMessage() {
                             backgroundColor: "#C9A84C",
                             border: "3px solid #073D47",
                             boxShadow: "0 0 0 2px rgba(201,168,76,0.3)",
-                        }} />
+                        }} /> */}
                     </div>
 
                     {/* Glassmorphism identity card */}
@@ -261,7 +265,8 @@ export default function PresidentMessage() {
                                 src="/images/committee/fazil-gaffoor.png"
                                 alt="Mohamed Fazil"
                                 fill
-                                style={{ objectFit: "cover" }}
+                                sizes="40px"
+                                style={{ objectFit: "cover", objectPosition: "center 15%", transform: "scale(1.2)", transformOrigin: "center 20%" }}
                             />
                         </div>
                         <div>
@@ -295,6 +300,10 @@ export default function PresidentMessage() {
           .president-photo-ring {
             width: 200px !important;
             height: 200px !important;
+          }
+          .president-photo-inner {
+            width: 188px !important;
+            height: 188px !important;
           }
         }
         @media (min-width: 768px) and (max-width: 1023px) {

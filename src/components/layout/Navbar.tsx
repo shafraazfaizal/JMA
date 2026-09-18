@@ -40,7 +40,7 @@ export default function Navbar() {
       <div
         style={{
           position: "fixed",
-          top: "0.875rem",
+          top: "2rem",
           left: "50%",
           transform: "translateX(-50%)",
           width: "calc(100% - 2.5rem)",
@@ -128,6 +128,17 @@ export default function Navbar() {
               <span>
                 <span style={{ color: "#C9A84C", fontWeight: 600 }}>A</span>
                 <span style={{ color: "#ffffff", fontWeight: 400 }}>ssociation</span>
+              </span>
+              <span style={{
+                color: "#C9A84C",
+                fontWeight: 600,
+                fontSize: "0.6rem",
+                letterSpacing: "0.18em",
+                textTransform: "uppercase" as const,
+                marginTop: "0.1rem",
+                opacity: 0.85,
+              }}>
+                United Kingdom
               </span>
             </span>
           </Link>

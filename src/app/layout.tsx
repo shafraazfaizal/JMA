@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import PublicChrome from "@/components/layout/PublicChrome";
 
 export const metadata: Metadata = {
   title: {
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
     siteName: "Jaffna Muslim Association",
     title: "Jaffna Muslim Association — UK Registered Charity",
     description:
-      "Serving humanity, one life at a time",
+      "Serving humanity,one life at a time.",
   },
   twitter: {
     card: "summary_large_image",
@@ -44,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <head>
         {/* Google Fonts — loaded via <link>, NOT next/font */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -59,7 +60,7 @@ export default function RootLayout({
         />
       </head>
       <body style={{ fontFamily: "var(--font-inter)", margin: 0 }}>
-        {children}
+        <PublicChrome>{children}</PublicChrome>
       </body>
     </html>
   );

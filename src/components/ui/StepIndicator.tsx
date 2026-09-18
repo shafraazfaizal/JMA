@@ -1,21 +1,17 @@
 import { Check } from "lucide-react";
 
-interface Step {
-    number: number;
-    label: string;
-}
-
-const steps: Step[] = [
-    { number: 1, label: "Amount" },
-    { number: 2, label: "Your Details" },
-    { number: 3, label: "Review & Pay" },
-];
-
 interface StepIndicatorProps {
-    current: number; // 1 | 2 | 3
+    step: number; // current step, 1-indexed
+    totalSteps: number;
+    labels: string[];
 }
 
-export default function StepIndicator({ current }: StepIndicatorProps) {
+export default function StepIndicator({ step: current, totalSteps, labels }: StepIndicatorProps) {
+    const steps = labels.slice(0, totalSteps).map((label, i) => ({
+        number: i + 1,
+        label,
+    }));
+
     return (
         <div
             style={{
@@ -31,11 +27,7 @@ export default function StepIndicator({ current }: StepIndicatorProps) {
                 const active = current === step.number;
 
                 return (
-                    <div
-                        key={step.number}
-                        style={{ display: "flex", alignItems: "center" }}
-                    >
-                        {/* Step node */}
+                    <div key={step.number} style={{ display: "flex", alignItems: "center" }}>
                         <div
                             style={{
                                 display: "flex",
@@ -56,35 +48,20 @@ export default function StepIndicator({ current }: StepIndicatorProps) {
                                     fontWeight: 700,
                                     fontSize: "0.875rem",
                                     transition: "all 0.3s ease",
-                                    backgroundColor: done
-                                        ? "#0D5C6B"
-                                        : active
-                                            ? "#C9A84C"
-                                            : "#F3F4F6",
+                                    backgroundColor: done ? "#0D5C6B" : active ? "#C9A84C" : "#F3F4F6",
                                     color: done || active ? "#ffffff" : "#9CA3AF",
-                                    border: `2px solid ${done ? "#0D5C6B" : active ? "#C9A84C" : "#E5E7EB"
-                                        }`,
-                                    boxShadow: active
-                                        ? "0 0 0 4px rgba(201,168,76,0.15)"
-                                        : "none",
+                                    border: `2px solid ${done ? "#0D5C6B" : active ? "#C9A84C" : "#E5E7EB"}`,
+                                    boxShadow: active ? "0 0 0 4px rgba(201,168,76,0.15)" : "none",
                                 }}
                             >
-                                {done ? (
-                                    <Check size={16} aria-hidden="true" />
-                                ) : (
-                                    step.number
-                                )}
+                                {done ? <Check size={16} aria-hidden="true" /> : step.number}
                             </div>
                             <span
                                 style={{
                                     fontFamily: "var(--font-inter)",
                                     fontSize: "0.75rem",
                                     fontWeight: active ? 600 : 400,
-                                    color: active
-                                        ? "#111827"
-                                        : done
-                                            ? "#0D5C6B"
-                                            : "#9CA3AF",
+                                    color: active ? "#111827" : done ? "#0D5C6B" : "#9CA3AF",
                                     whiteSpace: "nowrap" as const,
                                     transition: "color 0.3s ease",
                                 }}
@@ -93,7 +70,6 @@ export default function StepIndicator({ current }: StepIndicatorProps) {
                             </span>
                         </div>
 
-                        {/* Connector line — not after last step */}
                         {i < steps.length - 1 && (
                             <div
                                 style={{
