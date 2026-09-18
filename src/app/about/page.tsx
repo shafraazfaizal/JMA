@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import {
     ArrowRight, CheckCircle, Heart, Users,
@@ -884,17 +885,30 @@ export default function AboutPage() {
                                     el.style.borderColor = "#E5E7EB";
                                 }}
                             >
-                                <img
-                                    src={image}
-                                    alt={name}
-                                    style={{
-                                        width: "80px",
-                                        height: "80px",
-                                        borderRadius: "50%",
-                                        objectFit: "cover" as const,
-                                        flexShrink: 0,
-                                    }}
-                                />
+                                {/* Avatar wrapper — explicit size so Next.js fill has a pixel box */}
+                                <div style={{
+                                    width: "80px",
+                                    height: "80px",
+                                    borderRadius: "50%",
+                                    overflow: "hidden",
+                                    position: "relative",
+                                    flexShrink: 0,
+                                    backgroundColor: "#FDF6E3",
+                                    border: "2px solid rgba(201,168,76,0.25)",
+                                }}>
+                                    <Image
+                                        src={image}
+                                        alt={name}
+                                        fill
+                                        sizes="80px"
+                                        style={{
+                                            objectFit: "cover",
+                                            objectPosition: "center top",
+                                            transform: "scale(1.05)",
+                                            transformOrigin: "center top",
+                                        }}
+                                    />
+                                </div>
                                 <div>
                                     <p
                                         style={{
