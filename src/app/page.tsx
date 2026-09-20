@@ -15,7 +15,7 @@ import ZakatSection from "@/components/sections/ZakatSection";
 import StoriesSection from "@/components/sections/StoriesSection";
 import NewsEventsSection from "@/components/sections/NewsEventsSection";
 import NewsletterStrip from "@/components/sections/NewsletterStrip";
-import LaunchReveal from "@/components/launch-reveal/LaunchReveal";
+// import LaunchReveal from "@/components/launch-reveal/LaunchReveal";
 import { getAnnouncementFeed } from "@/lib/announcements-feed";
 import { getAllNewsArticles } from "@/lib/admin/news";
 import { getAllEvents } from "@/lib/admin/events";
@@ -45,7 +45,7 @@ export default async function HomePage() {
     return (
         <>
             {/* Reveal overlay — sits on top, fades away on button click */}
-            <LaunchReveal />
+            {/* <LaunchReveal /> */}
 
             {/* Full homepage underneath — already at top, no navigation needed */}
             <main>

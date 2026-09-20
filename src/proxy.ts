@@ -26,9 +26,9 @@ export async function proxy(request: NextRequest) {
             }
         );
 
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user }, error } = await supabase.auth.getUser();
 
-        if (!user) {
+        if (error || !user) {
             return NextResponse.redirect(new URL("/admin/login", request.url));
         }
 
@@ -39,7 +39,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-    matcher: [
-        "/((?!_next/static|_next/image|favicon.ico).*)",
-    ],
+    matcher: ["/admin/:path*"],
 };
