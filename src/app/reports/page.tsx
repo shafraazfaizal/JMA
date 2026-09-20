@@ -143,7 +143,7 @@ export default function ReportsPage() {
                                     Request Received
                                 </h2>
                                 <p style={{ fontFamily: "var(--font-inter)", fontSize: "1rem", color: "#6B7280", lineHeight: 1.7, maxWidth: "420px" }}>
-                                    Thank Yoou! We&apos;ve received your request for the{" "}
+                                    Thank You! We&apos;ve received your request for the{" "}
                                     <strong style={{ color: "#111827" }}>{form.reportYear} Annual Report</strong> and sent a confirmation to <strong style={{ color: "#111827" }}>{form.email}</strong>. Our team will be in touch within 1–2 working days.
                                 </p>
                             </div>
