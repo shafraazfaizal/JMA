@@ -3,87 +3,77 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-    ArrowRight, Download, FileText, TrendingUp,
-    Users, FolderOpen, CheckCircle, Shield, Mail,
+    ArrowRight, FileText, CheckCircle, Shield,
+    ClipboardList, Mail, Send,
 } from "lucide-react";
+import { submitReportRequest } from "./actions";
 
-interface AnnualReport {
-    year: string;
-    title: string;
-    totalRaised: string;
-    projectsCompleted: number;
-    familiesSupported: string;
-    highlights: string[];
-    pdfUrl: string | null;
-}
-
-const reports: AnnualReport[] = [
+const steps = [
     {
-        year: "2024/25",
-        title: "Annual Report 2024/25",
-        totalRaised: "£420,000",
-        projectsCompleted: 18,
-        familiesSupported: "2,100+",
-        highlights: [
-            "Mankumban Masjid reconstruction reached Phase 2",
-            "20 students sponsored through the Jaffna Scholarship Fund",
-            "Khardal Hasana membership grew to over 300 families",
-            "Clean water project launched in Vaddukkoddai",
-        ],
-        pdfUrl: null,
+        icon: ClipboardList,
+        step: "01",
+        title: "Fill in the form",
+        body: "Tell us your name, email, which report year you need, and briefly why you're requesting it.",
     },
     {
-        year: "2023/24",
-        title: "Annual Report 2023/24",
-        totalRaised: "£385,000",
-        projectsCompleted: 22,
-        familiesSupported: "1,950+",
-        highlights: [
-            "Digital platform launched for online donations and Gift Aid",
-            "Healthcare programme expanded to two new villages",
-            "First full Qurbani season distributed via verified local partners",
-            "JMA crossed £2 million in total funds raised since inception",
-        ],
-        pdfUrl: null,
+        icon: Shield,
+        step: "02",
+        title: "We review your request",
+        body: "Our team reviews every request to ensure our reports are accessed responsibly and for legitimate purposes.",
     },
     {
-        year: "2022/23",
-        title: "Annual Report 2022/23",
-        totalRaised: "£310,000",
-        projectsCompleted: 17,
-        familiesSupported: "1,600+",
-        highlights: [
-            "Emergency flood relief delivered to 400+ families",
-            "Khardal Hasana fee structure updated for sustainability",
-            "Scholarship fund expanded from 12 to 20 annual recipients",
-            "New governance framework adopted by the committee",
-        ],
-        pdfUrl: null,
-    },
-    {
-        year: "2021/22",
-        title: "Annual Report 2021/22",
-        totalRaised: "£295,000",
-        projectsCompleted: 15,
-        familiesSupported: "1,400+",
-        highlights: [
-            "Recovery support delivered through the pandemic period",
-            "Healthcare partnership established with local clinics",
-            "Winter relief campaign reached over 500 households",
-            "Committee restructured with new regional representatives",
-        ],
-        pdfUrl: null,
+        icon: Mail,
+        step: "03",
+        title: "Report delivered to you",
+        body: "Once approved, the full PDF report is sent directly to your inbox — usually within 1–2 working days.",
     },
 ];
 
-const trustPoints = [
-    { icon: Shield, label: "Independently Audited", body: "Every report is reviewed by independent auditors before publication." },
-    { icon: CheckCircle, label: "100% Transparency", body: "Full financial breakdowns published with no figures withheld." },
-    { icon: FileText, label: "Charity Commission Filed", body: "All reports filed with the Charity Commission for England and Wales." },
-];
+const reportYears = ["2024/25", "2023/24", "2022/23", "2021/22"];
+
+const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "0.8125rem 1rem",
+    border: "1.5px solid #E5E7EB",
+    borderRadius: "0.625rem",
+    fontFamily: "var(--font-inter)",
+    fontSize: "0.9375rem",
+    color: "#111827",
+    backgroundColor: "#ffffff",
+    outline: "none",
+    boxSizing: "border-box",
+    transition: "border-color 0.15s ease",
+};
+
+const labelStyle: React.CSSProperties = {
+    display: "block",
+    fontFamily: "var(--font-inter)",
+    fontWeight: 600,
+    fontSize: "0.8125rem",
+    color: "#374151",
+    marginBottom: "0.425rem",
+};
 
 export default function ReportsPage() {
-    const [expandedYear, setExpandedYear] = useState<string | null>(reports[0]?.year ?? null);
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        organisation: "",
+        reportYear: "2024/25",
+        reason: "",
+    });
+    const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setStatus("loading");
+        try {
+            await submitReportRequest(form);
+            setStatus("success");
+        } catch {
+            setStatus("error");
+        }
+    };
 
     return (
         <main style={{ minHeight: "100vh", backgroundColor: "#ffffff" }}>
@@ -100,196 +90,216 @@ export default function ReportsPage() {
                         <span style={{ color: "#C9A84C", fontStyle: "italic", fontFamily: "var(--font-noto)" }}>Reports</span>
                     </h1>
                     <p style={{ fontFamily: "var(--font-inter)", fontSize: "1.0625rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.75, maxWidth: "560px" }}>
-                        Every year we publish a full breakdown of funds raised, projects completed, and how every penny was spent. No exceptions.
+                        Our annual reports provide a complete, transparent account of all funds raised and how every penny was used. Available on request to anyone who wishes to see them.
                     </p>
                 </div>
             </section>
 
-            {/* ── Trust strip ── */}
-            <section style={{ backgroundColor: "#F9FAFB", padding: "3rem 1.5rem", borderBottom: "1px solid #E5E7EB" }}>
-                <div style={{ maxWidth: "80rem", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }} className="trust-grid">
-                    {trustPoints.map(({ icon: Icon, label, body }) => (
-                        <div key={label} style={{ display: "flex", alignItems: "flex-start", gap: "0.875rem" }}>
-                            <div style={{ width: "40px", height: "40px", borderRadius: "0.75rem", backgroundColor: "#E8F4F6", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                                <Icon size={18} style={{ color: "#0D5C6B" }} aria-hidden="true" />
-                            </div>
-                            <div>
-                                <p style={{ fontFamily: "var(--font-jakarta)", fontWeight: 700, fontSize: "0.9375rem", color: "#111827", marginBottom: "0.25rem" }}>{label}</p>
-                                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#6B7280", lineHeight: 1.5 }}>{body}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* ── Reports list ── */}
-            <section style={{ backgroundColor: "#ffffff", padding: "5rem 1.5rem" }}>
-                <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-                    <div style={{ display: "flex", flexDirection: "column" as const, gap: "1.25rem" }}>
-                        {reports.map((report, i) => {
-                            const isExpanded = expandedYear === report.year;
-                            const isLatest = i === 0;
-
-                            return (
-                                <div
-                                    key={report.year}
-                                    style={{
-                                        backgroundColor: isLatest ? "#0D5C6B" : "#ffffff",
-                                        borderRadius: "1.25rem",
-                                        border: isLatest ? "none" : "1px solid #E5E7EB",
-                                        overflow: "hidden",
-                                        boxShadow: isLatest ? "0 8px 32px -8px rgba(13,92,107,0.3)" : "0 1px 4px rgba(0,0,0,0.04)",
-                                        transition: "box-shadow 0.2s ease",
-                                    }}
-                                >
-                                    {/* Header row */}
-                                    <button
-                                        onClick={() => setExpandedYear(isExpanded ? null : report.year)}
-                                        style={{
-                                            width: "100%",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "space-between",
-                                            gap: "1.5rem",
-                                            padding: "1.75rem 2rem",
-                                            background: "none",
-                                            border: "none",
-                                            cursor: "pointer",
-                                            textAlign: "left" as const,
-                                            flexWrap: "wrap" as const,
-                                        }}
-                                    >
-                                        <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", flexWrap: "wrap" as const }}>
-                                            <div
-                                                style={{
-                                                    width: "52px",
-                                                    height: "52px",
-                                                    borderRadius: "0.875rem",
-                                                    backgroundColor: isLatest ? "rgba(201,168,76,0.15)" : "#E8F4F6",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                    flexShrink: 0,
-                                                }}
-                                            >
-                                                <FileText size={22} style={{ color: isLatest ? "#C9A84C" : "#0D5C6B" }} aria-hidden="true" />
-                                            </div>
-                                            <div>
-                                                <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", marginBottom: "0.25rem" }}>
-                                                    <p style={{ fontFamily: "var(--font-jakarta)", fontWeight: 800, fontSize: "1.125rem", color: isLatest ? "#ffffff" : "#111827" }}>
-                                                        {report.title}
-                                                    </p>
-                                                    {isLatest && (
-                                                        <span style={{ backgroundColor: "rgba(201,168,76,0.2)", color: "#C9A84C", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.65rem", letterSpacing: "0.06em", textTransform: "uppercase" as const, padding: "0.2rem 0.625rem", borderRadius: "9999px" }}>
-                                                            Latest
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", color: isLatest ? "rgba(255,255,255,0.6)" : "#6B7280" }}>
-                                                    {report.totalRaised} raised · {report.projectsCompleted} projects
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <span
-                                            style={{
-                                                fontFamily: "var(--font-inter)",
-                                                fontWeight: 600,
-                                                fontSize: "0.8125rem",
-                                                color: isLatest ? "rgba(255,255,255,0.7)" : "#0D5C6B",
-                                                flexShrink: 0,
-                                            }}
-                                        >
-                                            {isExpanded ? "Hide details" : "View details"}
-                                        </span>
-                                    </button>
-
-                                    {/* Expanded content */}
-                                    {isExpanded && (
-                                        <div style={{ padding: "0 2rem 2rem" }}>
-                                            <div style={{ height: "1px", backgroundColor: isLatest ? "rgba(255,255,255,0.1)" : "#F3F4F6", marginBottom: "1.5rem" }} />
-
-                                            {/* Stats row */}
-                                            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem", marginBottom: "1.75rem" }} className="report-stats">
-                                                {[
-                                                    { icon: TrendingUp, value: report.totalRaised, label: "Total Raised" },
-                                                    { icon: FolderOpen, value: String(report.projectsCompleted), label: "Projects Completed" },
-                                                    { icon: Users, value: report.familiesSupported, label: "Families Supported" },
-                                                ].map(({ icon: Icon, value, label }) => (
-                                                    <div
-                                                        key={label}
-                                                        style={{
-                                                            backgroundColor: isLatest ? "rgba(255,255,255,0.06)" : "#F9FAFB",
-                                                            border: isLatest ? "1px solid rgba(255,255,255,0.1)" : "1px solid #E5E7EB",
-                                                            borderRadius: "0.75rem",
-                                                            padding: "1rem",
-                                                            textAlign: "center" as const,
-                                                        }}
-                                                    >
-                                                        <Icon size={16} style={{ color: isLatest ? "#C9A84C" : "#0D5C6B", margin: "0 auto 0.5rem" }} aria-hidden="true" />
-                                                        <p style={{ fontFamily: "var(--font-jakarta)", fontWeight: 800, fontSize: "1.0625rem", color: isLatest ? "#ffffff" : "#0D5C6B", marginBottom: "0.125rem" }}>{value}</p>
-                                                        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.7rem", color: isLatest ? "rgba(255,255,255,0.5)" : "#9CA3AF" }}>{label}</p>
-                                                    </div>
-                                                ))}
-                                            </div>
-
-                                            {/* Highlights */}
-                                            <p style={{ fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.8125rem", color: isLatest ? "rgba(255,255,255,0.6)" : "#374151", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: "0.875rem" }}>
-                                                Key Highlights
-                                            </p>
-                                            <div style={{ display: "flex", flexDirection: "column" as const, gap: "0.625rem", marginBottom: "1.75rem" }}>
-                                                {report.highlights.map((h) => (
-                                                    <div key={h} style={{ display: "flex", alignItems: "flex-start", gap: "0.625rem" }}>
-                                                        <CheckCircle size={14} style={{ color: isLatest ? "#C9A84C" : "#0D5C6B", flexShrink: 0, marginTop: "2px" }} aria-hidden="true" />
-                                                        <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", color: isLatest ? "rgba(255,255,255,0.8)" : "#4B5563", lineHeight: 1.5 }}>{h}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
-
-                                            {/* Download */}
-                                            {report.pdfUrl ? (
-                                                <a
-                                                    href={report.pdfUrl}
-                                                    download
-                                                    style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem 1.5rem", borderRadius: "0.5rem", backgroundColor: isLatest ? "#C9A84C" : "#0D5C6B", color: "#ffffff", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.875rem", textDecoration: "none" }}
-                                                >
-                                                    <Download size={15} aria-hidden="true" />
-                                                    Download Full Report (PDF)
-                                                </a>
-                                            ) : (
-                                                <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem 1.5rem", borderRadius: "0.5rem", backgroundColor: isLatest ? "rgba(255,255,255,0.08)" : "#F3F4F6", color: isLatest ? "rgba(255,255,255,0.5)" : "#9CA3AF", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.875rem" }}>
-                                                    <FileText size={15} aria-hidden="true" />
-                                                    Full PDF report coming soon
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
+            {/* ── How it works ── */}
+            <section style={{ backgroundColor: "#F9FAFB", padding: "4.5rem 1.5rem", borderBottom: "1px solid #E5E7EB" }}>
+                <div style={{ maxWidth: "80rem", margin: "0 auto" }}>
+                    <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "#0D5C6B", marginBottom: "0.625rem", textAlign: "center" as const }}>
+                        How it works
+                    </p>
+                    <h2 style={{ fontFamily: "var(--font-jakarta)", fontWeight: 800, fontSize: "clamp(1.5rem, 2.5vw, 2rem)", color: "#111827", letterSpacing: "-0.02em", textAlign: "center" as const, marginBottom: "3rem" }}>
+                        Simple. Transparent. Three steps.
+                    </h2>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem" }} className="steps-grid">
+                        {steps.map(({ icon: Icon, step, title, body }, i) => (
+                            <div key={step} style={{ position: "relative" }}>
+                                {/* connector line */}
+                                {i < steps.length - 1 && (
+                                    <div aria-hidden="true" className="connector-line" style={{ position: "absolute", top: "28px", left: "calc(50% + 28px)", right: "calc(-50% + 28px)", height: "1px", backgroundColor: "#E5E7EB", zIndex: 0 }} />
+                                )}
+                                <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column" as const, alignItems: "center", textAlign: "center" as const, gap: "1rem" }}>
+                                    <div style={{ width: "56px", height: "56px", borderRadius: "50%", backgroundColor: "#0D5C6B", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                        <Icon size={22} style={{ color: "#C9A84C" }} aria-hidden="true" />
+                                    </div>
+                                    <div>
+                                        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "#C9A84C", marginBottom: "0.375rem" }}>
+                                            Step {step}
+                                        </p>
+                                        <p style={{ fontFamily: "var(--font-jakarta)", fontWeight: 700, fontSize: "1rem", color: "#111827", marginBottom: "0.5rem" }}>{title}</p>
+                                        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", color: "#6B7280", lineHeight: 1.65 }}>{body}</p>
+                                    </div>
                                 </div>
-                            );
-                        })}
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* ── Request older reports ── */}
-            <section style={{ backgroundColor: "#F9FAFB", padding: "4rem 1.5rem" }}>
-                <div style={{ maxWidth: "640px", margin: "0 auto", textAlign: "center" as const }}>
-                    <Mail size={28} style={{ color: "#0D5C6B", margin: "0 auto 1rem" }} aria-hidden="true" />
-                    <h2 style={{ fontFamily: "var(--font-jakarta)", fontWeight: 700, fontSize: "1.25rem", color: "#111827", marginBottom: "0.75rem" }}>
-                        Looking for an older report?
-                    </h2>
-                    <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.9375rem", color: "#6B7280", lineHeight: 1.7, marginBottom: "1.75rem" }}>
-                        Reports prior to 2021/22 are available on request. Get in touch with our team and we&apos;ll send them directly.
-                    </p>
-                    <Link
-                        href="/contact"
-                        style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.8125rem 1.75rem", borderRadius: "0.5rem", backgroundColor: "#0D5C6B", color: "#ffffff", fontFamily: "var(--font-jakarta)", fontWeight: 700, fontSize: "0.9375rem", textDecoration: "none", transition: "background-color 0.2s ease" }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#094955"; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#0D5C6B"; }}
-                    >
-                        Contact Us
-                        <ArrowRight size={15} aria-hidden="true" />
-                    </Link>
+            {/* ── Inline request form ── */}
+            <section style={{ backgroundColor: "#ffffff", padding: "5rem 1.5rem" }}>
+                <div style={{ maxWidth: "680px", margin: "0 auto" }}>
+
+                    {status === "success" ? (
+                        <div style={{ display: "flex", flexDirection: "column" as const, alignItems: "center", textAlign: "center" as const, gap: "1.25rem", padding: "4rem 2rem" }}>
+                            <div style={{ width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "#E8F4F6", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <CheckCircle size={28} style={{ color: "#0D5C6B" }} />
+                            </div>
+                            <div>
+                                <h2 style={{ fontFamily: "var(--font-jakarta)", fontWeight: 800, fontSize: "1.5rem", color: "#111827", marginBottom: "0.75rem" }}>
+                                    Request Received
+                                </h2>
+                                <p style={{ fontFamily: "var(--font-inter)", fontSize: "1rem", color: "#6B7280", lineHeight: 1.7, maxWidth: "420px" }}>
+                                    JazākAllāhu Khayran! We&apos;ve received your request for the{" "}
+                                    <strong style={{ color: "#111827" }}>{form.reportYear} Annual Report</strong> and sent a confirmation to <strong style={{ color: "#111827" }}>{form.email}</strong>. Our team will be in touch within 1–2 working days.
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => { setStatus("idle"); setForm({ name: "", email: "", organisation: "", reportYear: "2024/25", reason: "" }); }}
+                                style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", fontWeight: 600, color: "#0D5C6B", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", marginTop: "0.5rem" }}
+                            >
+                                Submit another request
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            <div style={{ marginBottom: "2.5rem" }}>
+                                <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#E8F4F6", padding: "0.375rem 0.875rem", borderRadius: "9999px", marginBottom: "1rem" }}>
+                                    <FileText size={13} style={{ color: "#0D5C6B" }} aria-hidden="true" />
+                                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", fontWeight: 600, color: "#0D5C6B", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
+                                        Report Request
+                                    </span>
+                                </div>
+                                <h2 style={{ fontFamily: "var(--font-jakarta)", fontWeight: 800, fontSize: "clamp(1.5rem, 3vw, 2rem)", color: "#111827", letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>
+                                    Request an Annual Report
+                                </h2>
+                                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.9375rem", color: "#6B7280", lineHeight: 1.7 }}>
+                                    Fill in your details below and tell us which report you need. We&apos;ll send it directly to your email once reviewed.
+                                </p>
+                            </div>
+
+                            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column" as const, gap: "1.25rem" }}>
+
+                                {/* Name + Email */}
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }} className="form-row">
+                                    <div>
+                                        <label style={labelStyle}>
+                                            Full Name <span style={{ color: "#C9A84C" }}>*</span>
+                                        </label>
+                                        <input
+                                            required
+                                            type="text"
+                                            placeholder="Your full name"
+                                            value={form.name}
+                                            onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                            style={inputStyle}
+                                            onFocus={(e) => { e.currentTarget.style.borderColor = "#0D5C6B"; }}
+                                            onBlur={(e) => { e.currentTarget.style.borderColor = "#E5E7EB"; }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={labelStyle}>
+                                            Email Address <span style={{ color: "#C9A84C" }}>*</span>
+                                        </label>
+                                        <input
+                                            required
+                                            type="email"
+                                            placeholder="you@example.com"
+                                            value={form.email}
+                                            onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                            style={inputStyle}
+                                            onFocus={(e) => { e.currentTarget.style.borderColor = "#0D5C6B"; }}
+                                            onBlur={(e) => { e.currentTarget.style.borderColor = "#E5E7EB"; }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Organisation */}
+                                <div>
+                                    <label style={labelStyle}>
+                                        Organisation{" "}
+                                        <span style={{ fontWeight: 400, color: "#9CA3AF" }}>(optional)</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. Mosque committee, research institution…"
+                                        value={form.organisation}
+                                        onChange={(e) => setForm({ ...form, organisation: e.target.value })}
+                                        style={inputStyle}
+                                        onFocus={(e) => { e.currentTarget.style.borderColor = "#0D5C6B"; }}
+                                        onBlur={(e) => { e.currentTarget.style.borderColor = "#E5E7EB"; }}
+                                    />
+                                </div>
+
+                                {/* Report year */}
+                                <div>
+                                    <label style={labelStyle}>
+                                        Report Year <span style={{ color: "#C9A84C" }}>*</span>
+                                    </label>
+                                    <select
+                                        required
+                                        value={form.reportYear}
+                                        onChange={(e) => setForm({ ...form, reportYear: e.target.value })}
+                                        style={{ ...inputStyle, appearance: "none" as const, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 1rem center", paddingRight: "2.5rem", cursor: "pointer" }}
+                                        onFocus={(e) => { e.currentTarget.style.borderColor = "#0D5C6B"; }}
+                                        onBlur={(e) => { e.currentTarget.style.borderColor = "#E5E7EB"; }}
+                                    >
+                                        {reportYears.map((y) => (
+                                            <option key={y} value={y}>Annual Report {y}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Reason */}
+                                <div>
+                                    <label style={labelStyle}>
+                                        Reason for Request{" "}
+                                        <span style={{ fontWeight: 400, color: "#9CA3AF" }}>(optional)</span>
+                                    </label>
+                                    <textarea
+                                        rows={4}
+                                        placeholder="e.g. Due diligence before donating, academic research, personal interest…"
+                                        value={form.reason}
+                                        onChange={(e) => setForm({ ...form, reason: e.target.value })}
+                                        style={{ ...inputStyle, resize: "vertical" as const, minHeight: "100px" }}
+                                        onFocus={(e) => { e.currentTarget.style.borderColor = "#0D5C6B"; }}
+                                        onBlur={(e) => { e.currentTarget.style.borderColor = "#E5E7EB"; }}
+                                    />
+                                </div>
+
+                                {status === "error" && (
+                                    <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", color: "#EF4444", margin: 0 }}>
+                                        Something went wrong. Please try again or email us at{" "}
+                                        <a href="mailto:info@jaffnamuslimuk.org" style={{ color: "#EF4444" }}>info@jaffnamuslimuk.org</a>.
+                                    </p>
+                                )}
+
+                                <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", paddingTop: "0.25rem" }}>
+                                    <button
+                                        type="submit"
+                                        disabled={status === "loading"}
+                                        style={{
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            gap: "0.5rem",
+                                            padding: "0.9375rem 2rem",
+                                            borderRadius: "0.625rem",
+                                            backgroundColor: "#0D5C6B",
+                                            color: "#ffffff",
+                                            fontFamily: "var(--font-jakarta)",
+                                            fontWeight: 700,
+                                            fontSize: "0.9375rem",
+                                            border: "none",
+                                            cursor: status === "loading" ? "not-allowed" : "pointer",
+                                            opacity: status === "loading" ? 0.7 : 1,
+                                            transition: "opacity 0.2s ease, background-color 0.2s ease",
+                                        }}
+                                        onMouseEnter={(e) => { if (status !== "loading") (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#094955"; }}
+                                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#0D5C6B"; }}
+                                    >
+                                        <Send size={15} aria-hidden="true" />
+                                        {status === "loading" ? "Sending…" : "Submit Request"}
+                                    </button>
+                                    <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#9CA3AF", margin: 0, lineHeight: 1.5 }}>
+                                        You&apos;ll receive a confirmation email right away.
+                                    </p>
+                                </div>
+                            </form>
+                        </>
+                    )}
                 </div>
             </section>
 
@@ -317,8 +327,9 @@ export default function ReportsPage() {
 
             <style>{`
         @media (max-width: 767px) {
-          .trust-grid { grid-template-columns: 1fr !important; }
-          .report-stats { grid-template-columns: 1fr !important; }
+          .steps-grid { grid-template-columns: 1fr !important; }
+          .form-row { grid-template-columns: 1fr !important; }
+          .connector-line { display: none !important; }
         }
       `}</style>
         </main>
