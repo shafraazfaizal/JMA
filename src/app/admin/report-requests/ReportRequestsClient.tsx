@@ -34,6 +34,13 @@ const filterOptions = [
     { value: "rejected", label: "Rejected" },
 ];
 
+function formatDateTime(iso: string) {
+    const d = new Date(iso);
+    const date = d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+    const time = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+    return `${date} at ${time}`;
+}
+
 function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString("en-GB", {
         day: "numeric", month: "short", year: "numeric",
@@ -44,21 +51,24 @@ function RequestCard({ req }: { req: ReportRequest }) {
     const [expanded, setExpanded] = useState(false);
     const [notes, setNotes] = useState(req.admin_notes ?? "");
     const [confirmDelete, setConfirm] = useState(false);
+    const [currentStatus, setCurrentStatus] = useState<Status>(req.status);
     const [isPending, startTransition] = useTransition();
 
-    const cfg = statusConfig[req.status];
+    const cfg = statusConfig[currentStatus];
     const StatusIcon = cfg.icon;
 
     const handleStatus = (status: Status) => {
-        startTransition(async () => {
-            await updateReportRequestStatusAction(req.id, status, notes);
+        startTransition(() => {
+            updateReportRequestStatusAction(req.id, status, notes)
+                .then(() => setCurrentStatus(status))
+                .catch(err => console.error(err));
         });
     };
 
     const handleDelete = () => {
         if (!confirmDelete) { setConfirm(true); return; }
-        startTransition(async () => {
-            await deleteReportRequestAction(req.id);
+        startTransition(() => {
+            deleteReportRequestAction(req.id).catch(err => console.error(err));
         });
     };
 
@@ -73,22 +83,26 @@ function RequestCard({ req }: { req: ReportRequest }) {
                 transition: "opacity 0.2s ease",
             }}
         >
-            {/* Card header */}
+            {/* Card header — clicking anywhere expands */}
             <div
+                role="button"
+                tabIndex={0}
                 style={{
                     padding: "1.125rem 1.25rem",
                     display: "flex",
                     alignItems: "center",
                     gap: "1rem",
                     cursor: "pointer",
+                    userSelect: "none" as const,
                 }}
                 onClick={() => setExpanded(v => !v)}
+                onKeyDown={e => { if (e.key === "Enter" || e.key === " ") setExpanded(v => !v); }}
             >
                 {/* Icon */}
                 <div
                     style={{
                         width: "38px", height: "38px", borderRadius: "0.5rem",
-                        backgroundColor: "#F0FDF4",
+                        backgroundColor: "#EFF6FF",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         flexShrink: 0,
                     }}
@@ -121,35 +135,36 @@ function RequestCard({ req }: { req: ReportRequest }) {
                     {cfg.label}
                 </span>
 
-                {/* Date */}
-                <span style={{ fontSize: "0.75rem", color: "#9CA3AF", flexShrink: 0, display: "none" as const }} className="hide-mobile">
-                    {formatDate(req.created_at)}
+                {/* Date + time */}
+                <span style={{ fontSize: "0.75rem", color: "#9CA3AF", flexShrink: 0, whiteSpace: "nowrap" as const }}>
+                    {formatDateTime(req.created_at)}
                 </span>
 
                 {/* Expand toggle */}
-                <button
-                    onClick={(e) => { e.stopPropagation(); setExpanded(v => !v); }}
+                <div
                     style={{
                         width: "28px", height: "28px", borderRadius: "0.375rem",
                         border: "1px solid #E5E7EB", backgroundColor: "#F9FAFB",
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        cursor: "pointer", flexShrink: 0, color: "#6B7280",
+                        flexShrink: 0, color: "#6B7280",
                     }}
                 >
                     {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                </button>
+                </div>
             </div>
 
             {/* Expanded details */}
             {expanded && (
-                <div style={{ borderTop: "1px solid #F3F4F6", padding: "1.25rem" }}>
-
+                <div
+                    style={{ borderTop: "1px solid #F3F4F6", padding: "1.25rem" }}
+                    onClick={e => e.stopPropagation()}
+                >
                     {/* Info grid */}
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem", marginBottom: "1.25rem" }}>
                         <InfoItem icon={<Mail size={14} />} label="Email" value={req.email} />
                         <InfoItem icon={<Building2 size={14} />} label="Organisation" value={req.organisation ?? "—"} />
                         <InfoItem icon={<FileText size={14} />} label="Report Year" value={req.report_year} />
-                        <InfoItem icon={<Clock size={14} />} label="Submitted" value={formatDate(req.created_at)} />
+                        <InfoItem icon={<Clock size={14} />} label="Submitted" value={formatDateTime(req.created_at)} />
                     </div>
 
                     {/* Reason */}
@@ -188,36 +203,40 @@ function RequestCard({ req }: { req: ReportRequest }) {
                     {/* Action buttons */}
                     <div style={{ display: "flex", flexWrap: "wrap" as const, gap: "0.625rem", alignItems: "center" }}>
 
-                        {req.status !== "sent" && (
+                        {currentStatus !== "sent" && (
                             <ActionButton
                                 onClick={() => handleStatus("sent")}
                                 bg="#F0FDF4" text="#15803D" border="#BBF7D0"
                                 icon={<Send size={13} />}
                                 label="Mark as Sent"
+                                disabled={isPending}
                             />
                         )}
 
-                        {req.status !== "pending" && (
+                        {currentStatus !== "pending" && (
                             <ActionButton
                                 onClick={() => handleStatus("pending")}
                                 bg="#FAF5E8" text="#B08D35" border="#FDE68A"
                                 icon={<Clock size={13} />}
                                 label="Mark as Pending"
+                                disabled={isPending}
                             />
                         )}
 
-                        {req.status !== "rejected" && (
+                        {currentStatus !== "rejected" && (
                             <ActionButton
                                 onClick={() => handleStatus("rejected")}
                                 bg="#FEF2F2" text="#DC2626" border="#FECACA"
                                 icon={<XCircle size={13} />}
                                 label="Reject"
+                                disabled={isPending}
                             />
                         )}
 
                         <div style={{ marginLeft: "auto" }}>
                             <button
                                 onClick={handleDelete}
+                                disabled={isPending}
                                 style={{
                                     display: "flex", alignItems: "center", gap: "0.375rem",
                                     padding: "0.4375rem 0.875rem", borderRadius: "0.5rem",
@@ -225,7 +244,8 @@ function RequestCard({ req }: { req: ReportRequest }) {
                                     backgroundColor: confirmDelete ? "#FEF2F2" : "#ffffff",
                                     color: confirmDelete ? "#DC2626" : "#9CA3AF",
                                     fontSize: "0.8125rem", fontWeight: 500,
-                                    cursor: "pointer", transition: "all 0.15s ease",
+                                    cursor: isPending ? "not-allowed" : "pointer",
+                                    transition: "all 0.15s ease",
                                 }}
                                 onMouseLeave={() => setConfirm(false)}
                             >
@@ -254,21 +274,24 @@ function InfoItem({ icon, label, value }: { icon: React.ReactNode; label: string
     );
 }
 
-function ActionButton({ onClick, bg, text, border, icon, label }: {
+function ActionButton({ onClick, bg, text, border, icon, label, disabled }: {
     onClick: () => void; bg: string; text: string; border: string;
-    icon: React.ReactNode; label: string;
+    icon: React.ReactNode; label: string; disabled?: boolean;
 }) {
     return (
         <button
             onClick={onClick}
+            disabled={disabled}
             style={{
                 display: "flex", alignItems: "center", gap: "0.375rem",
                 padding: "0.4375rem 0.875rem", borderRadius: "0.5rem",
                 border: `1px solid ${border}`, backgroundColor: bg, color: text,
-                fontSize: "0.8125rem", fontWeight: 500, cursor: "pointer",
+                fontSize: "0.8125rem", fontWeight: 500,
+                cursor: disabled ? "not-allowed" : "pointer",
+                opacity: disabled ? 0.6 : 1,
                 transition: "filter 0.15s ease",
             }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.filter = "brightness(0.96)"; }}
+            onMouseEnter={e => { if (!disabled) (e.currentTarget as HTMLButtonElement).style.filter = "brightness(0.96)"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.filter = "brightness(1)"; }}
         >
             {icon}
