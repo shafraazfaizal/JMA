@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle } from "lucide-react";
 
 const miniStats = [
-    { value: "22+", label: "Years Active" },
+    { value: "24+", label: "Years Active" },
     { value: "£2.4M+", label: "Raised" },
     { value: "85+", label: "Projects" },
 ];

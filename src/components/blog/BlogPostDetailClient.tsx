@@ -2,8 +2,12 @@
 
 import Link from "next/link";
 import {
-    ArrowLeft, Clock, Calendar, ArrowRight, Share2,
+    ArrowLeft, Clock, Calendar, ArrowRight, Share2, Languages,
 } from "lucide-react";
+
+function isTamil(text: string): boolean {
+    return /[஀-௿]/.test(text);
+}
 import type { DBBlogPost } from "@/types/database";
 
 interface BlogPostDetailClientProps {
@@ -87,9 +91,9 @@ export default function BlogPostDetailClient({ post, related }: BlogPostDetailCl
 
                     {/* Body text */}
                     <div style={{ display: "flex", flexDirection: "column" as const, gap: "1.25rem" }}>
-                        {post.content.split("\n\n").map((para, i) => (
+                        {post.content.split(/\n\n+|\n/).filter(p => p.trim() !== "").map((para, i) => (
                             <p key={i} style={{ fontFamily: "var(--font-inter)", fontSize: "1.0625rem", lineHeight: 1.85, color: "#374151" }}>
-                                {para}
+                                {para.trim()}
                             </p>
                         ))}
                     </div>
@@ -99,15 +103,27 @@ export default function BlogPostDetailClient({ post, related }: BlogPostDetailCl
                         <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", color: "#9CA3AF" }}>
                             Published {fmtDate(post.published_at)} by {post.author_name}
                         </p>
-                        <button
-                            onClick={() => {
-                                if (navigator.share) navigator.share({ title: post.title, url: window.location.href });
-                                else navigator.clipboard.writeText(window.location.href);
-                            }}
-                            style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.625rem 1.25rem", borderRadius: "0.5rem", border: "1.5px solid #E5E7EB", backgroundColor: "#ffffff", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.875rem", color: "#374151", cursor: "pointer" }}
-                        >
-                            <Share2 size={15} aria-hidden="true" /> Share post
-                        </button>
+                        <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap" as const }}>
+                            {isTamil(post.title + post.content) && (
+                                <a
+                                    href={`https://translate.google.com/translate?sl=ta&tl=en&u=${encodeURIComponent(`https://jaffnamuslims.org.uk/blog/${post.slug}`)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.625rem 1.25rem", borderRadius: "0.5rem", border: "1.5px solid #C9A84C", backgroundColor: "#FAF5E8", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.875rem", color: "#B08D35", textDecoration: "none", cursor: "pointer" }}
+                                >
+                                    <Languages size={15} aria-hidden="true" /> Translate to English
+                                </a>
+                            )}
+                            <button
+                                onClick={() => {
+                                    if (navigator.share) navigator.share({ title: post.title, url: window.location.href });
+                                    else navigator.clipboard.writeText(window.location.href);
+                                }}
+                                style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.625rem 1.25rem", borderRadius: "0.5rem", border: "1.5px solid #E5E7EB", backgroundColor: "#ffffff", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.875rem", color: "#374151", cursor: "pointer" }}
+                            >
+                                <Share2 size={15} aria-hidden="true" /> Share post
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>

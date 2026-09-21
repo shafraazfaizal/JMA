@@ -14,7 +14,7 @@ import type { FeedAnnouncement } from "@/lib/announcements-feed";
 import type { FeaturedMediaItem } from "@/components/sections/MediaShowcase";
 
 const stats = [
-    { icon: Calendar, value: 20, suffix: "+", label: "Years of Service", format: false },
+    { icon: Calendar, value: 24, suffix: "+", label: "Years of Service", format: false },
     { icon: Users, value: 3000, suffix: "+", label: "Families Helped", format: true },
     { icon: FolderOpen, value: 200, suffix: "+", label: "Projects Delivered", format: false },
     { icon: CheckCircle, value: 100, suffix: "%", label: "Donations to Ground", format: false },

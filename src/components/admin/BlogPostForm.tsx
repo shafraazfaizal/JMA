@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Upload, X, Loader2, Save } from "lucide-react";
+import { Upload, X, Loader2, Save, Crop as CropIcon, Check } from "lucide-react";
+import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop } from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 import { uploadMedia } from "@/lib/supabase/storage";
 import { createBlogPostAction, updateBlogPostAction } from "@/app/admin/blog/actions";
 import { estimateReadTime } from "@/lib/admin/blog-utils";
@@ -13,6 +15,45 @@ import {
 import type { DBBlogPost } from "@/types/database";
 
 const suggestedCategories = ["Reflections", "Opinion", "Ramadan Diary", "Community Voices", "Faith & Practice"];
+
+const ASPECT = 16 / 9;
+
+function centerAspectCrop(mediaWidth: number, mediaHeight: number): Crop {
+    return centerCrop(
+        makeAspectCrop({ unit: "%", width: 90 }, ASPECT, mediaWidth, mediaHeight),
+        mediaWidth,
+        mediaHeight,
+    );
+}
+
+async function getCroppedBlob(image: HTMLImageElement, crop: PixelCrop, fileName: string): Promise<File> {
+    const canvas = document.createElement("canvas");
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+
+    canvas.width = crop.width * scaleX;
+    canvas.height = crop.height * scaleY;
+
+    const ctx = canvas.getContext("2d")!;
+    ctx.drawImage(
+        image,
+        crop.x * scaleX,
+        crop.y * scaleY,
+        crop.width * scaleX,
+        crop.height * scaleY,
+        0,
+        0,
+        canvas.width,
+        canvas.height,
+    );
+
+    return new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+            if (!blob) { reject(new Error("Canvas is empty")); return; }
+            resolve(new File([blob], fileName, { type: "image/jpeg" }));
+        }, "image/jpeg", 0.92);
+    });
+}
 
 export default function BlogPostForm({ post }: { post?: DBBlogPost }) {
     const router = useRouter();
@@ -25,14 +66,38 @@ export default function BlogPostForm({ post }: { post?: DBBlogPost }) {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Cropper state
+    const [cropSrc, setCropSrc] = useState<string | null>(null);
+    const [cropFileName, setCropFileName] = useState("cover.jpg");
+    const [crop, setCrop] = useState<Crop>();
+    const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+    const imgRef = useRef<HTMLImageElement>(null);
+
+    const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
+        setCropFileName(file.name);
+        const reader = new FileReader();
+        reader.addEventListener("load", () => setCropSrc(reader.result?.toString() ?? null));
+        reader.readAsDataURL(file);
+        // reset input so same file can be re-selected
+        e.target.value = "";
+    };
+
+    const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+        const { naturalWidth, naturalHeight } = e.currentTarget;
+        setCrop(centerAspectCrop(naturalWidth, naturalHeight));
+    }, []);
+
+    const handleCropConfirm = async () => {
+        if (!imgRef.current || !completedCrop) return;
         setUploading(true);
         setError("");
         try {
+            const file = await getCroppedBlob(imgRef.current, completedCrop, cropFileName);
             const url = await uploadMedia(file, "blog");
             setImageUrl(url);
+            setCropSrc(null);
         } catch (err) {
             setError(err instanceof Error ? err.message : "Upload failed. Please try again.");
         } finally {
@@ -43,9 +108,7 @@ export default function BlogPostForm({ post }: { post?: DBBlogPost }) {
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const value = e.target.value;
         setContent(value);
-        if (!post) {
-            setReadTime(estimateReadTime(value));
-        }
+        if (!post) setReadTime(estimateReadTime(value));
     };
 
     const handleSubmit = async (formData: FormData) => {
@@ -62,191 +125,282 @@ export default function BlogPostForm({ post }: { post?: DBBlogPost }) {
     };
 
     return (
-        <form action={handleSubmit}>
-            <div style={{ display: "flex", flexDirection: "column" as const, gap: "1.75rem" }}>
-
-                {/* Title */}
-                <div>
-                    <AdminFieldLabel required>Post Title</AdminFieldLabel>
-                    <input
-                        name="title"
-                        type="text"
-                        required
-                        defaultValue={post?.title}
-                        placeholder="e.g. Why We Give: Reflections on Sadaqah Jariyah"
-                        style={adminInputStyle()}
-                        onFocus={onFocusBorder}
-                        onBlur={onBlurBorder}
-                    />
-                    {isEdit && <AdminFieldHint>URL: jaffnamuslims.org.uk/blog/{post.slug}</AdminFieldHint>}
-                </div>
-
-                {/* Category */}
-                <div>
-                    <AdminFieldLabel>Category</AdminFieldLabel>
-                    <input
-                        name="category"
-                        type="text"
-                        list="category-suggestions"
-                        defaultValue={post?.category ?? "Reflections"}
-                        placeholder="e.g. Reflections"
-                        style={adminInputStyle()}
-                        onFocus={onFocusBorder}
-                        onBlur={onBlurBorder}
-                    />
-                    <datalist id="category-suggestions">
-                        {suggestedCategories.map((c) => <option key={c} value={c} />)}
-                    </datalist>
-                    <AdminFieldHint>Free text — pick from suggestions or type your own.</AdminFieldHint>
-                </div>
-
-                {/* Author name + role */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
-                    <div>
-                        <AdminFieldLabel required>Author Name</AdminFieldLabel>
-                        <input
-                            name="author_name"
-                            type="text"
-                            required
-                            defaultValue={post?.author_name}
-                            placeholder="e.g. Mohamed Fazil"
-                            style={adminInputStyle()}
-                            onFocus={onFocusBorder}
-                            onBlur={onBlurBorder}
-                        />
-                    </div>
-                    <div>
-                        <AdminFieldLabel>Author Role <span style={{ fontWeight: 400, color: "#9CA3AF" }}>(optional)</span></AdminFieldLabel>
-                        <input
-                            name="author_role"
-                            type="text"
-                            defaultValue={post?.author_role ?? ""}
-                            placeholder="e.g. JMA Chairman, Guest Contributor"
-                            style={adminInputStyle()}
-                            onFocus={onFocusBorder}
-                            onBlur={onBlurBorder}
-                        />
-                    </div>
-                </div>
-
-                {/* Published date */}
-                <div style={{ maxWidth: "280px" }}>
-                    <AdminFieldLabel required>Publish Date</AdminFieldLabel>
-                    <input
-                        name="published_at"
-                        type="date"
-                        required
-                        defaultValue={post ? post.published_at.split("T")[0] : new Date().toISOString().split("T")[0]}
-                        style={adminInputStyle()}
-                        onFocus={onFocusBorder}
-                        onBlur={onBlurBorder}
-                    />
-                </div>
-
-                {/* Excerpt */}
-                <div>
-                    <AdminFieldLabel required>Excerpt</AdminFieldLabel>
-                    <textarea
-                        name="excerpt"
-                        required
-                        rows={2}
-                        defaultValue={post?.excerpt}
-                        placeholder="One or two sentences shown on blog cards"
-                        style={{ ...adminInputStyle(), resize: "vertical" as const, lineHeight: 1.6 }}
-                        onFocus={onFocusBorder}
-                        onBlur={onBlurBorder}
-                    />
-                </div>
-
-                {/* Content */}
-                <div>
-                    <AdminFieldLabel required>Post Content</AdminFieldLabel>
-                    <textarea
-                        name="content"
-                        required
-                        rows={12}
-                        value={content}
-                        onChange={handleContentChange}
-                        placeholder="Write the full post here. Leave a blank line between paragraphs."
-                        style={{ ...adminInputStyle(), resize: "vertical" as const, lineHeight: 1.7, fontFamily: "var(--font-inter)" }}
-                        onFocus={onFocusBorder}
-                        onBlur={onBlurBorder}
-                    />
-                    <AdminFieldHint>Separate paragraphs with a blank line — they&apos;ll display as proper paragraphs on the site.</AdminFieldHint>
-                </div>
-
-                {/* Read time */}
-                <div style={{ maxWidth: "200px" }}>
-                    <AdminFieldLabel>Read Time (minutes)</AdminFieldLabel>
-                    <input
-                        type="number"
-                        min="1"
-                        value={readTime}
-                        onChange={(e) => setReadTime(Number(e.target.value) || 1)}
-                        style={adminInputStyle()}
-                        onFocus={onFocusBorder}
-                        onBlur={onBlurBorder}
-                    />
-                    <AdminFieldHint>Auto-estimated from your content — adjust if needed.</AdminFieldHint>
-                </div>
-
-                {/* Cover image */}
-                <div>
-                    <AdminFieldLabel>Cover Image</AdminFieldLabel>
-                    {imageUrl ? (
-                        <div style={{ position: "relative", borderRadius: "0.75rem", overflow: "hidden", height: "200px", border: "1.5px solid #E5E7EB" }}>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={imageUrl} alt="Cover" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <>
+            {/* ── Crop modal ── */}
+            {cropSrc && (
+                <div style={{
+                    position: "fixed", inset: 0, zIndex: 9999,
+                    backgroundColor: "rgba(0,0,0,0.75)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    padding: "1.5rem",
+                }}>
+                    <div style={{
+                        backgroundColor: "#ffffff", borderRadius: "1rem",
+                        padding: "1.5rem", maxWidth: "760px", width: "100%",
+                        display: "flex", flexDirection: "column", gap: "1.25rem",
+                        maxHeight: "90vh", overflow: "auto",
+                    }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                            <div>
+                                <p style={{ fontFamily: "var(--font-jakarta)", fontWeight: 700, fontSize: "1rem", color: "#111827", marginBottom: "0.125rem" }}>
+                                    Crop Cover Image
+                                </p>
+                                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#6B7280" }}>
+                                    Drag to adjust — locked to 16:9 for the best fit on the blog post page.
+                                </p>
+                            </div>
                             <button
-                                type="button"
-                                onClick={() => setImageUrl("")}
-                                style={{ position: "absolute", top: "0.625rem", right: "0.625rem", width: "32px", height: "32px", borderRadius: "0.5rem", backgroundColor: "rgba(0,0,0,0.6)", border: "none", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
-                                aria-label="Remove image"
+                                onClick={() => setCropSrc(null)}
+                                style={{ width: "34px", height: "34px", borderRadius: "0.5rem", border: "1.5px solid #E5E7EB", backgroundColor: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#6B7280", flexShrink: 0 }}
+                                aria-label="Cancel crop"
                             >
-                                <X size={16} aria-hidden="true" />
+                                <X size={16} />
                             </button>
                         </div>
-                    ) : (
-                        <label style={{ display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", gap: "0.625rem", height: "140px", borderRadius: "0.75rem", border: "2px dashed #D1D5DB", backgroundColor: "#F9FAFB", cursor: "pointer" }}>
-                            {uploading ? (
-                                <Loader2 size={22} className="animate-spin" style={{ color: "#0D5C6B" }} aria-hidden="true" />
-                            ) : (
-                                <Upload size={22} style={{ color: "#9CA3AF" }} aria-hidden="true" />
-                            )}
-                            <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#6B7280" }}>
-                                {uploading ? "Uploading…" : "Click to upload a cover image"}
-                            </span>
-                            <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} disabled={uploading} />
-                        </label>
-                    )}
-                    {error && <AdminFieldHint>{error}</AdminFieldHint>}
-                    <AdminFieldHint>If left empty, a gold gradient placeholder is shown instead.</AdminFieldHint>
-                </div>
 
-                {/* Actions */}
-                <div style={{ display: "flex", gap: "0.75rem", paddingTop: "0.5rem", borderTop: "1px solid #F3F4F6" }}>
-                    <button
-                        type="button"
-                        onClick={() => router.push("/admin/blog")}
-                        style={{ padding: "0.8125rem 1.5rem", borderRadius: "0.5rem", border: "1.5px solid #E5E7EB", backgroundColor: "#ffffff", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.9375rem", color: "#374151", cursor: "pointer" }}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        disabled={submitting || uploading}
-                        style={{
-                            flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem",
-                            padding: "0.8125rem 1.5rem", borderRadius: "0.5rem", border: "none",
-                            backgroundColor: submitting ? "#094955" : "#0D5C6B", color: "#ffffff",
-                            fontFamily: "var(--font-jakarta)", fontWeight: 700, fontSize: "0.9375rem",
-                            cursor: submitting || uploading ? "not-allowed" : "pointer", transition: "background-color 0.2s ease",
-                        }}
-                    >
-                        {submitting ? "Saving…" : (<><Save size={16} aria-hidden="true" /> {isEdit ? "Save Changes" : "Publish Post"}</>)}
-                    </button>
+                        <div style={{ borderRadius: "0.5rem", overflow: "hidden", backgroundColor: "#F3F4F6" }}>
+                            <ReactCrop
+                                crop={crop}
+                                onChange={(c) => setCrop(c)}
+                                onComplete={(c) => setCompletedCrop(c)}
+                                aspect={ASPECT}
+                                style={{ maxHeight: "55vh" }}
+                            >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    ref={imgRef}
+                                    src={cropSrc}
+                                    alt="Crop preview"
+                                    onLoad={onImageLoad}
+                                    style={{ maxWidth: "100%", maxHeight: "55vh", display: "block" }}
+                                />
+                            </ReactCrop>
+                        </div>
+
+                        <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
+                            <button
+                                type="button"
+                                onClick={() => setCropSrc(null)}
+                                style={{ padding: "0.6875rem 1.25rem", borderRadius: "0.5rem", border: "1.5px solid #E5E7EB", backgroundColor: "#ffffff", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.875rem", color: "#374151", cursor: "pointer" }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleCropConfirm}
+                                disabled={uploading || !completedCrop}
+                                style={{
+                                    display: "inline-flex", alignItems: "center", gap: "0.5rem",
+                                    padding: "0.6875rem 1.25rem", borderRadius: "0.5rem", border: "none",
+                                    backgroundColor: uploading ? "#094955" : "#0D5C6B", color: "#ffffff",
+                                    fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.875rem",
+                                    cursor: uploading || !completedCrop ? "not-allowed" : "pointer",
+                                }}
+                            >
+                                {uploading ? <><Loader2 size={15} className="animate-spin" /> Uploading…</> : <><Check size={15} /> Use this crop</>}
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </form>
+            )}
+
+            <form action={handleSubmit}>
+                <div style={{ display: "flex", flexDirection: "column" as const, gap: "1.75rem" }}>
+
+                    {/* Title */}
+                    <div>
+                        <AdminFieldLabel required>Post Title</AdminFieldLabel>
+                        <input
+                            name="title"
+                            type="text"
+                            required
+                            defaultValue={post?.title}
+                            placeholder="e.g. Why We Give: Reflections on Sadaqah Jariyah"
+                            style={adminInputStyle()}
+                            onFocus={onFocusBorder}
+                            onBlur={onBlurBorder}
+                        />
+                        {isEdit && <AdminFieldHint>URL: jaffnamuslims.org.uk/blog/{post.slug}</AdminFieldHint>}
+                    </div>
+
+                    {/* Category */}
+                    <div>
+                        <AdminFieldLabel>Category</AdminFieldLabel>
+                        <input
+                            name="category"
+                            type="text"
+                            list="category-suggestions"
+                            defaultValue={post?.category ?? "Reflections"}
+                            placeholder="e.g. Reflections"
+                            style={adminInputStyle()}
+                            onFocus={onFocusBorder}
+                            onBlur={onBlurBorder}
+                        />
+                        <datalist id="category-suggestions">
+                            {suggestedCategories.map((c) => <option key={c} value={c} />)}
+                        </datalist>
+                        <AdminFieldHint>Free text — pick from suggestions or type your own.</AdminFieldHint>
+                    </div>
+
+                    {/* Author name + role */}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+                        <div>
+                            <AdminFieldLabel required>Author Name</AdminFieldLabel>
+                            <input
+                                name="author_name"
+                                type="text"
+                                required
+                                defaultValue={post?.author_name}
+                                placeholder="e.g. Mohamed Fazil"
+                                style={adminInputStyle()}
+                                onFocus={onFocusBorder}
+                                onBlur={onBlurBorder}
+                            />
+                        </div>
+                        <div>
+                            <AdminFieldLabel>Author Role <span style={{ fontWeight: 400, color: "#9CA3AF" }}>(optional)</span></AdminFieldLabel>
+                            <input
+                                name="author_role"
+                                type="text"
+                                defaultValue={post?.author_role ?? ""}
+                                placeholder="e.g. JMA Chairman, Guest Contributor"
+                                style={adminInputStyle()}
+                                onFocus={onFocusBorder}
+                                onBlur={onBlurBorder}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Published date */}
+                    <div style={{ maxWidth: "280px" }}>
+                        <AdminFieldLabel required>Publish Date</AdminFieldLabel>
+                        <input
+                            name="published_at"
+                            type="date"
+                            required
+                            defaultValue={post ? post.published_at.split("T")[0] : new Date().toISOString().split("T")[0]}
+                            style={adminInputStyle()}
+                            onFocus={onFocusBorder}
+                            onBlur={onBlurBorder}
+                        />
+                    </div>
+
+                    {/* Excerpt */}
+                    <div>
+                        <AdminFieldLabel required>Excerpt</AdminFieldLabel>
+                        <textarea
+                            name="excerpt"
+                            required
+                            rows={2}
+                            defaultValue={post?.excerpt}
+                            placeholder="One or two sentences shown on blog cards"
+                            style={{ ...adminInputStyle(), resize: "vertical" as const, lineHeight: 1.6 }}
+                            onFocus={onFocusBorder}
+                            onBlur={onBlurBorder}
+                        />
+                    </div>
+
+                    {/* Content */}
+                    <div>
+                        <AdminFieldLabel required>Post Content</AdminFieldLabel>
+                        <textarea
+                            name="content"
+                            required
+                            rows={12}
+                            value={content}
+                            onChange={handleContentChange}
+                            placeholder="Write the full post here. Leave a blank line between paragraphs."
+                            style={{ ...adminInputStyle(), resize: "vertical" as const, lineHeight: 1.7, fontFamily: "var(--font-inter)" }}
+                            onFocus={onFocusBorder}
+                            onBlur={onBlurBorder}
+                        />
+                        <AdminFieldHint>Separate paragraphs with a blank line — they&apos;ll display as proper paragraphs on the site.</AdminFieldHint>
+                    </div>
+
+                    {/* Read time */}
+                    <div style={{ maxWidth: "200px" }}>
+                        <AdminFieldLabel>Read Time (minutes)</AdminFieldLabel>
+                        <input
+                            type="number"
+                            min="1"
+                            value={readTime}
+                            onChange={(e) => setReadTime(Number(e.target.value) || 1)}
+                            style={adminInputStyle()}
+                            onFocus={onFocusBorder}
+                            onBlur={onBlurBorder}
+                        />
+                        <AdminFieldHint>Auto-estimated from your content — adjust if needed.</AdminFieldHint>
+                    </div>
+
+                    {/* Cover image */}
+                    <div>
+                        <AdminFieldLabel>Cover Image</AdminFieldLabel>
+                        {imageUrl ? (
+                            <div style={{ position: "relative", borderRadius: "0.75rem", overflow: "hidden", height: "200px", border: "1.5px solid #E5E7EB" }}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={imageUrl} alt="Cover" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                <div style={{ position: "absolute", top: "0.625rem", right: "0.625rem", display: "flex", gap: "0.375rem" }}>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setCropSrc(imageUrl); setCropFileName("cover.jpg"); }}
+                                        style={{ width: "32px", height: "32px", borderRadius: "0.5rem", backgroundColor: "rgba(0,0,0,0.6)", border: "none", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+                                        title="Crop image"
+                                        aria-label="Crop image"
+                                    >
+                                        <CropIcon size={15} aria-hidden="true" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setImageUrl("")}
+                                        style={{ width: "32px", height: "32px", borderRadius: "0.5rem", backgroundColor: "rgba(0,0,0,0.6)", border: "none", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+                                        aria-label="Remove image"
+                                    >
+                                        <X size={16} aria-hidden="true" />
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <label style={{ display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", gap: "0.625rem", height: "140px", borderRadius: "0.75rem", border: "2px dashed #D1D5DB", backgroundColor: "#F9FAFB", cursor: "pointer" }}>
+                                {uploading ? (
+                                    <Loader2 size={22} className="animate-spin" style={{ color: "#0D5C6B" }} aria-hidden="true" />
+                                ) : (
+                                    <Upload size={22} style={{ color: "#9CA3AF" }} aria-hidden="true" />
+                                )}
+                                <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#6B7280" }}>
+                                    {uploading ? "Uploading…" : "Click to upload a cover image"}
+                                </span>
+                                <input type="file" accept="image/*" onChange={onSelectFile} style={{ display: "none" }} disabled={uploading} />
+                            </label>
+                        )}
+                        {error && <AdminFieldHint>{error}</AdminFieldHint>}
+                        <AdminFieldHint>If left empty, a gold gradient placeholder is shown instead.</AdminFieldHint>
+                    </div>
+
+                    {/* Actions */}
+                    <div style={{ display: "flex", gap: "0.75rem", paddingTop: "0.5rem", borderTop: "1px solid #F3F4F6" }}>
+                        <button
+                            type="button"
+                            onClick={() => router.push("/admin/blog")}
+                            style={{ padding: "0.8125rem 1.5rem", borderRadius: "0.5rem", border: "1.5px solid #E5E7EB", backgroundColor: "#ffffff", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.9375rem", color: "#374151", cursor: "pointer" }}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={submitting || uploading}
+                            style={{
+                                flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem",
+                                padding: "0.8125rem 1.5rem", borderRadius: "0.5rem", border: "none",
+                                backgroundColor: submitting ? "#094955" : "#0D5C6B", color: "#ffffff",
+                                fontFamily: "var(--font-jakarta)", fontWeight: 700, fontSize: "0.9375rem",
+                                cursor: submitting || uploading ? "not-allowed" : "pointer", transition: "background-color 0.2s ease",
+                            }}
+                        >
+                            {submitting ? "Saving…" : (<><Save size={16} aria-hidden="true" /> {isEdit ? "Save Changes" : "Publish Post"}</>)}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </>
     );
 }

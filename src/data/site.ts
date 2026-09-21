@@ -76,7 +76,7 @@ export const navLinks: NavItem[] = [
 export const heroStats: StatItem[] = [
   {
     icon: "Calendar",
-    value: "20+",
+    value: "24",
     numericValue: 20,
     suffix: "+",
     label: "Years of Service",

@@ -101,7 +101,7 @@ export default function ImpactSection() {
                             marginBottom: "1rem",
                         }}
                     >
-                        22 years of real change
+                        24 years of real change
                     </h2>
                     <p
                         style={{

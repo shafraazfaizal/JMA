@@ -1,10 +1,17 @@
 export function slugify(title: string): string {
-    return title
+    const slug = title
         .toLowerCase()
         .trim()
         .replace(/[^\w\s-]/g, "")
         .replace(/[\s_]+/g, "-")
         .replace(/^-+|-+$/g, "");
+
+    // Fallback for non-Latin titles (e.g. Tamil) that produce an empty slug
+    if (!slug) {
+        return `post-${Date.now()}`;
+    }
+
+    return slug;
 }
 
 /**

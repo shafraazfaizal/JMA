@@ -233,7 +233,7 @@ export default function Footer() {
             }}
           />
 
-          <span style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
+          {/* <span style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
             Built by{" "}
             <a
               href="https://www.skayl.digital/"
@@ -245,7 +245,7 @@ export default function Footer() {
             >
               SKAYL
             </a>
-          </span>
+          </span> */}
         </div>
       </div>
     </footer>
