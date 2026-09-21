@@ -125,7 +125,7 @@ export default function ProjectSubmitPage() {
                         Submit a Project Request
                     </h1>
                     <p style={{ fontFamily: "var(--font-inter)", fontSize: "1rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.7, maxWidth: "520px" }}>
-                        If you know of a family, individual, or community in genuine need — tell us about it. The JMA committee reviews every request and will get back to you إن شاء الله.
+                        If you know of a family, individual, or community in genuine need — tell us about it. The JMA committee reviews every request and will get back to you Insha Allah
                     </p>
                 </div>
             </div>

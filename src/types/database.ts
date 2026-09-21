@@ -132,3 +132,66 @@ export interface DBGalleryItem {
     aspect: "wide" | "tall" | "square";
     created_at: string;
 }
+
+export type ShowcaseCategory =
+    | "Written Word"
+    | "Creative Arts"
+    | "Spoken Word"
+    | "Islamic Achievement"
+    | "Academic"
+    | "Sport & Fitness";
+
+export type AgeGroup = "Junior (5–10)" | "Teen (11–15)" | "Young Adult (16–18)";
+
+export type ShowcaseStatus = "pending" | "published" | "rejected";
+
+export interface DBShowcaseSubmission {
+    id: string;
+    child_name: string;
+    age_group: AgeGroup;
+    parent_email: string;
+    parent_name: string;
+    category: ShowcaseCategory;
+    title: string;
+    description: string;
+    file_url: string | null;
+    file_type: "image" | "video" | "pdf" | null;
+    consent_publish: boolean;
+    show_name: boolean;
+    status: ShowcaseStatus;
+    admin_note: string | null;
+    published_at: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export type QuizRegistrationStatus = "registered" | "attended" | "winner" | "no_show";
+
+export interface DBQuizRegistration {
+    id: string;
+    child_name: string;
+    age_group: AgeGroup;
+    parent_name: string;
+    parent_email: string;
+    parent_phone: string | null;
+    quiz_month: string; // YYYY-MM
+    status: QuizRegistrationStatus;
+    link_sent: boolean;
+    created_at: string;
+}
+
+export interface DBQuizSession {
+    id: string;
+    quiz_month: string; // YYYY-MM
+    title: string;
+    topic: string | null;
+    scheduled_at: string | null;
+    registration_open: boolean;
+    zoom_link: string | null;
+    winner_name: string | null;
+    winner_age_group: AgeGroup | null;
+    winner_prize: string | null;
+    results_published: boolean;
+    created_at: string;
+    updated_at: string;
+}

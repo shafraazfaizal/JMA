@@ -7,43 +7,43 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function subscribeToNewsletterAction(
-    email: string
+  email: string
 ): Promise<{ success: boolean; error?: string; alreadySubscribed?: boolean }> {
-    const supabase = await createClient();
+  const supabase = await createClient();
 
-    // Check if already subscribed
-    const { data: existing } = await supabase
-        .from("newsletter_subscribers")
-        .select("id, status")
-        .eq("email", email)
-        .maybeSingle();
+  // Check if already subscribed
+  const { data: existing } = await supabase
+    .from("newsletter_subscribers")
+    .select("id, status")
+    .eq("email", email)
+    .maybeSingle();
 
-    if (existing) {
-        if (existing.status === "active") {
-            return { success: false, alreadySubscribed: true };
-        }
-        // Re-activate if previously unsubscribed
-        await supabase
-            .from("newsletter_subscribers")
-            .update({ status: "active" })
-            .eq("email", email);
-    } else {
-        const { error: dbError } = await supabase
-            .from("newsletter_subscribers")
-            .insert({ email, status: "active" });
-
-        if (dbError) {
-            console.error("[newsletter]", dbError.message);
-            return { success: false, error: "Failed to subscribe. Please try again." };
-        }
+  if (existing) {
+    if (existing.status === "active") {
+      return { success: false, alreadySubscribed: true };
     }
+    // Re-activate if previously unsubscribed
+    await supabase
+      .from("newsletter_subscribers")
+      .update({ status: "active" })
+      .eq("email", email);
+  } else {
+    const { error: dbError } = await supabase
+      .from("newsletter_subscribers")
+      .insert({ email, status: "active" });
 
-    // Welcome email to subscriber
-    await resend.emails.send({
-        from: "JMA <noreply@jaffnamuslimuk.org>",
-        to: email,
-        subject: "Welcome to the JMA Newsletter — Thank you for subscribing",
-        html: `
+    if (dbError) {
+      console.error("[newsletter]", dbError.message);
+      return { success: false, error: "Failed to subscribe. Please try again." };
+    }
+  }
+
+  // Welcome email to subscriber
+  await resend.emails.send({
+    from: "JMA <noreply@jaffnamuslimuk.org>",
+    to: email,
+    subject: "Welcome to the JMA Newsletter — Thank you for subscribing",
+    html: `
       <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #111827;">
         <div style="background: #073D47; padding: 32px 24px; border-radius: 8px 8px 0 0;">
           <h1 style="color: #ffffff; font-size: 22px; margin: 0 0 4px;">Thank You</h1>
@@ -54,7 +54,7 @@ export async function subscribeToNewsletterAction(
             Assalamu Alaikum,
           </p>
           <p style="margin: 0 0 16px; color: #374151; line-height: 1.6;">
-            Thank you for subscribing to the JMA newsletter. You will now receive updates on our latest projects, impact stories, upcoming events, and seasonal appeals directly to your inbox إن شاء الله.
+            Thank you for subscribing to the JMA newsletter. You will now receive updates on our latest projects, impact stories, upcoming events, and seasonal appeals directly to your inbox Insha Allah
           </p>
           <div style="background: #F9FAFB; border-radius: 8px; border-left: 3px solid #C9A84C; padding: 16px; margin: 24px 0;">
             <p style="margin: 0; font-style: italic; color: #374151; line-height: 1.7; font-size: 14px;">
@@ -71,15 +71,15 @@ export async function subscribeToNewsletterAction(
         </div>
       </div>
     `,
-    });
+  });
 
-    // Notify JMA of new subscriber
-    await resend.emails.send({
-        from: "JMA Website <noreply@jaffnamuslimuk.org>",
-        to: "info@jaffnamuslimuk.org",
-        cc: "jmauk.sec@gmail.com",
-        subject: `New Newsletter Subscriber — ${email}`,
-        html: `
+  // Notify JMA of new subscriber
+  await resend.emails.send({
+    from: "JMA Website <noreply@jaffnamuslimuk.org>",
+    to: "info@jaffnamuslimuk.org",
+    cc: "jmauk.sec@gmail.com",
+    subject: `New Newsletter Subscriber — ${email}`,
+    html: `
       <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;">
         <div style="background: #073D47; padding: 20px 24px; border-radius: 8px 8px 0 0;">
           <h2 style="color: #ffffff; margin: 0; font-size: 16px;">New Newsletter Subscriber</h2>
@@ -90,7 +90,7 @@ export async function subscribeToNewsletterAction(
         </div>
       </div>
     `,
-    });
+  });
 
-    return { success: true };
+  return { success: true };
 }

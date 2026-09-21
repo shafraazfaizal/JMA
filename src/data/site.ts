@@ -65,6 +65,8 @@ export const navLinks: NavItem[] = [
   {
     label: "Community",
     items: [
+      { label: "Student Showcase", href: "/community/showcase" },
+      { label: "Monthly Quiz", href: "/community/quiz" },
       { label: "Membership", href: "/membership" },
       { label: "Events", href: "/events" },
       { label: "Khardal Hasana", href: "/khardal-hasana" },
