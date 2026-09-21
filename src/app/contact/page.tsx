@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import {
     Mail, Phone, MapPin, Send, CheckCircle,
     AlertCircle, Clock, MessageSquare,
 } from "lucide-react";
 import { siteConfig } from "@/data/site";
+import { sendContactAction } from "./actions";
 
 const enquiryTypes = [
     "General Enquiry",
@@ -58,8 +59,9 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
 export default function ContactPage() {
     const [form, setForm] = useState<FormData>(defaultForm);
     const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
-    const [submitting, setSubmitting] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [submitted, setSubmitted] = useState(false);
+    const [serverError, setServerError] = useState("");
 
     const set = <K extends keyof FormData>(k: K, v: FormData[K]) =>
         setForm((p) => ({ ...p, [k]: v }));
@@ -75,13 +77,17 @@ export default function ContactPage() {
         return Object.keys(e).length === 0;
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         if (!validate()) return;
-        setSubmitting(true);
-        // Placeholder — wire to Resend once /api/contact is built
-        await new Promise((r) => setTimeout(r, 900));
-        setSubmitting(false);
-        setSubmitted(true);
+        setServerError("");
+        startTransition(async () => {
+            const result = await sendContactAction(form);
+            if (result.success) {
+                setSubmitted(true);
+            } else {
+                setServerError(result.error ?? "Something went wrong. Please try again.");
+            }
+        });
     };
 
     return (
@@ -180,7 +186,7 @@ export default function ContactPage() {
                                     <CheckCircle size={30} style={{ color: "#0D5C6B" }} aria-hidden="true" />
                                 </div>
                                 <h2 style={{ fontFamily: "var(--font-jakarta)", fontWeight: 800, fontSize: "1.375rem", color: "#111827", marginBottom: "0.75rem" }}>
-                                    Message sent — جزاك الله خيرا
+                                    Message sent — Jazakallah Khair !
                                 </h2>
                                 <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.9375rem", color: "#6B7280", lineHeight: 1.7, maxWidth: "400px", margin: "0 auto 2rem" }}>
                                     Thank you for reaching out. We&apos;ll get back to you at <strong style={{ color: "#111827" }}>{form.email}</strong> as soon as possible.
@@ -231,15 +237,23 @@ export default function ContactPage() {
                                     {errors.message && <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#EF4444", marginTop: "0.3rem" }}>{errors.message}</p>}
                                 </div>
 
+                                {/* Server error */}
+                                {serverError && (
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#FEF2F2", border: "1px solid #FECACA", borderRadius: "0.5rem", padding: "0.75rem 1rem", marginBottom: "1.25rem" }}>
+                                        <AlertCircle size={15} style={{ color: "#EF4444", flexShrink: 0 }} aria-hidden="true" />
+                                        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.875rem", color: "#DC2626", margin: 0 }}>{serverError}</p>
+                                    </div>
+                                )}
+
                                 {/* Submit */}
                                 <button
                                     onClick={handleSubmit}
-                                    disabled={submitting}
-                                    style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", padding: "0.9375rem", borderRadius: "0.5rem", border: "none", backgroundColor: submitting ? "#B08D35" : "#C9A84C", color: "#ffffff", fontFamily: "var(--font-jakarta)", fontWeight: 700, fontSize: "1rem", cursor: submitting ? "not-allowed" : "pointer", transition: "background-color 0.2s ease" }}
-                                    onMouseEnter={(e) => { if (!submitting) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#B08D35"; }}
-                                    onMouseLeave={(e) => { if (!submitting) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#C9A84C"; }}
+                                    disabled={isPending}
+                                    style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", padding: "0.9375rem", borderRadius: "0.5rem", border: "none", backgroundColor: isPending ? "#B08D35" : "#C9A84C", color: "#ffffff", fontFamily: "var(--font-jakarta)", fontWeight: 700, fontSize: "1rem", cursor: isPending ? "not-allowed" : "pointer", transition: "background-color 0.2s ease" }}
+                                    onMouseEnter={(e) => { if (!isPending) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#B08D35"; }}
+                                    onMouseLeave={(e) => { if (!isPending) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#C9A84C"; }}
                                 >
-                                    {submitting ? "Sending…" : (<><Send size={16} aria-hidden="true" /> Send Message</>)}
+                                    {isPending ? "Sending…" : (<><Send size={16} aria-hidden="true" /> Send Message</>)}
                                 </button>
                             </div>
                         )}

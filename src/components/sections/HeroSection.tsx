@@ -237,6 +237,10 @@ function AnnouncementStrip({ announcements }: { announcements: FeedAnnouncement[
     const [paused, setPaused] = useState(false);
 
     useEffect(() => {
+        setIndex(0);
+    }, [announcements.length]);
+
+    useEffect(() => {
         if (announcements.length <= 1 || paused) return;
         const interval = setInterval(() => {
             setIndex((i) => (i + 1) % announcements.length);
@@ -246,7 +250,8 @@ function AnnouncementStrip({ announcements }: { announcements: FeedAnnouncement[
 
     if (announcements.length === 0) return null;
 
-    const current = announcements[index];
+    const current = announcements[index] ?? announcements[0];
+    if (!current) return null;
     const feedType: FeedType = current.feed_type ?? "manual";
     const { icon: FeedIcon, colour: iconColour, label: typeLabel } = feedIcons[feedType];
 
