@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo, Suspense } from "react";
+import { useState, useMemo, Suspense, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, Clock, ArrowRight, X, Mail } from "lucide-react";
+import { Search, Clock, ArrowRight, X, Mail, CheckCircle } from "lucide-react";
+import { subscribeToNewsletterAction } from "@/app/newsletter/actions";
 import type { DBNewsArticle } from "@/types/database";
 
 type NewsCategory = DBNewsArticle["category"];
@@ -33,6 +34,9 @@ function NewsPageInner({ articles }: { articles: DBNewsArticle[] }) {
     const [category, setCategory] = useState<NewsCategory | "All">(initialCategory);
     const [emailSub, setEmailSub] = useState("");
     const [subDone, setSubDone] = useState(false);
+    const [alreadySubscribed, setAlreadySubscribed] = useState(false);
+    const [subError, setSubError] = useState("");
+    const [isSubPending, startSubTransition] = useTransition();
 
     const sorted = useMemo(
         () => [...articles].sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime()),
@@ -58,9 +62,23 @@ function NewsPageInner({ articles }: { articles: DBNewsArticle[] }) {
         new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
     const handleSubscribe = () => {
-        if (!emailSub.includes("@")) return;
-        // Placeholder — wire to Resend once /api/newsletter is built
-        setSubDone(true);
+        const trimmed = emailSub.trim();
+        if (!trimmed || !trimmed.includes("@")) {
+            setSubError("Please enter a valid email address.");
+            return;
+        }
+        setSubError("");
+        startSubTransition(async () => {
+            const result = await subscribeToNewsletterAction(trimmed);
+            if (result.success) {
+                setSubDone(true);
+            } else if (result.alreadySubscribed) {
+                setAlreadySubscribed(true);
+                setSubDone(true);
+            } else {
+                setSubError(result.error ?? "Something went wrong. Please try again.");
+            }
+        });
     };
 
     return (
@@ -148,25 +166,67 @@ function NewsPageInner({ articles }: { articles: DBNewsArticle[] }) {
                     </div>
 
                     {subDone ? (
-                        <span style={{ fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.875rem", color: "#BE185D" }}>
-                            You&apos;re subscribed!
-                        </span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+                            <CheckCircle size={18} style={{ color: "#BE185D", flexShrink: 0 }} aria-hidden="true" />
+                            <div>
+                                <p style={{ fontFamily: "var(--font-jakarta)", fontWeight: 700, fontSize: "0.9375rem", color: "#BE185D", marginBottom: "0.125rem" }}>
+                                    {alreadySubscribed ? "Already subscribed!" : "You're subscribed — Thank You"}
+                                </p>
+                                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#6B7280" }}>
+                                    {alreadySubscribed
+                                        ? "This email is already on our list."
+                                        : "Check your inbox for a welcome email."}
+                                </p>
+                            </div>
+                        </div>
                     ) : (
-                        <div style={{ display: "flex", gap: "0.5rem", flex: 1, maxWidth: "380px", minWidth: "260px" }}>
-                            <input
-                                type="email"
-                                placeholder="your@email.com"
-                                value={emailSub}
-                                onChange={(e) => setEmailSub(e.target.value)}
-                                onKeyDown={(e) => { if (e.key === "Enter") handleSubscribe(); }}
-                                style={{ flex: 1, padding: "0.625rem 0.875rem", borderRadius: "0.5rem", border: "1.5px solid #FBCFE8", fontFamily: "var(--font-inter)", fontSize: "0.875rem", color: "#111827", outline: "none", backgroundColor: "#ffffff" }}
-                            />
-                            <button
-                                onClick={handleSubscribe}
-                                style={{ padding: "0.625rem 1.25rem", borderRadius: "0.5rem", border: "none", backgroundColor: "#BE185D", color: "#ffffff", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.875rem", cursor: "pointer", whiteSpace: "nowrap" as const }}
-                            >
-                                Subscribe
-                            </button>
+                        <div style={{ flex: 1, maxWidth: "380px", minWidth: "260px" }}>
+                            <div style={{ display: "flex", gap: "0.5rem" }}>
+                                <input
+                                    type="email"
+                                    placeholder="your@email.com"
+                                    value={emailSub}
+                                    onChange={(e) => {
+                                        setEmailSub(e.target.value);
+                                        if (subError) setSubError("");
+                                    }}
+                                    onKeyDown={(e) => { if (e.key === "Enter") handleSubscribe(); }}
+                                    style={{
+                                        flex: 1,
+                                        padding: "0.625rem 0.875rem",
+                                        borderRadius: "0.5rem",
+                                        border: `1.5px solid ${subError ? "rgba(239,68,68,0.7)" : "#FBCFE8"}`,
+                                        fontFamily: "var(--font-inter)",
+                                        fontSize: "0.875rem",
+                                        color: "#111827",
+                                        outline: "none",
+                                        backgroundColor: "#ffffff",
+                                    }}
+                                />
+                                <button
+                                    onClick={handleSubscribe}
+                                    disabled={isSubPending}
+                                    style={{
+                                        padding: "0.625rem 1.25rem",
+                                        borderRadius: "0.5rem",
+                                        border: "none",
+                                        backgroundColor: isSubPending ? "#9D174D" : "#BE185D",
+                                        color: "#ffffff",
+                                        fontFamily: "var(--font-inter)",
+                                        fontWeight: 600,
+                                        fontSize: "0.875rem",
+                                        cursor: isSubPending ? "not-allowed" : "pointer",
+                                        whiteSpace: "nowrap" as const,
+                                    }}
+                                >
+                                    {isSubPending ? "Subscribing…" : "Subscribe"}
+                                </button>
+                            </div>
+                            {subError && (
+                                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "rgba(239,68,68,0.9)", marginTop: "0.375rem" }}>
+                                    {subError}
+                                </p>
+                            )}
                         </div>
                     )}
                 </div>

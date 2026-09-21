@@ -128,7 +128,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 {/* Nav */}
                 <nav style={{ flex: 1, padding: collapsed ? "1rem 0.5rem" : "1rem 0.875rem", display: "flex", flexDirection: "column" as const, gap: "0.25rem", transition: "padding 0.25s ease" }}>
                     {navItems.map(({ href, label, icon: Icon, exact }) => {
-                        const isActive = exact ? pathname === href : pathname.startsWith(href);
+                        const isActive = exact
+                            ? pathname === href
+                            : pathname === href || pathname.startsWith(href + "/");
                         return (
                             <Link
                                 key={href}
