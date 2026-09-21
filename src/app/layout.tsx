@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import PublicChrome from "@/components/layout/PublicChrome";
+import PWAInstallBanner from "@/components/pwa/PWAInstallBanner";
 
 export const metadata: Metadata = {
   title: {
@@ -25,8 +26,7 @@ export const metadata: Metadata = {
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://jaffnamuslims.org.uk",
     siteName: "Jaffna Muslim Association",
     title: "Jaffna Muslim Association — UK Registered Charity",
-    description:
-      "Serving humanity,one life at a time.",
+    description: "Serving humanity, one life at a time.",
   },
   twitter: {
     card: "summary_large_image",
@@ -58,9 +58,18 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Noto+Serif+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap"
           rel="stylesheet"
         />
+        {/* PWA */}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#073D47" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="JMA UK" />
+        <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body style={{ fontFamily: "var(--font-inter)", margin: 0 }}>
         <PublicChrome>{children}</PublicChrome>
+        <PWAInstallBanner />
       </body>
     </html>
   );
