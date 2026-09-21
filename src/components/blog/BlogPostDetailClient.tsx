@@ -106,7 +106,7 @@ export default function BlogPostDetailClient({ post, related }: BlogPostDetailCl
                         <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap" as const }}>
                             {isTamil(post.title + post.content) && (
                                 <a
-                                    href={`https://translate.google.com/translate?sl=ta&tl=en&u=${encodeURIComponent(`https://jaffnamuslims.org.uk/blog/${post.slug}`)}`}
+                                    href={`https://translate.google.com/?sl=ta&tl=en&text=${encodeURIComponent(post.title + "\n\n" + post.content)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.625rem 1.25rem", borderRadius: "0.5rem", border: "1.5px solid #C9A84C", backgroundColor: "#FAF5E8", fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.875rem", color: "#B08D35", textDecoration: "none", cursor: "pointer" }}
