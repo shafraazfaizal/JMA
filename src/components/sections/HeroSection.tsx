@@ -14,9 +14,9 @@ import type { FeedAnnouncement } from "@/lib/announcements-feed";
 import type { FeaturedMediaItem } from "@/components/sections/MediaShowcase";
 
 const stats = [
-    { icon: Calendar, value: 24, suffix: "+", label: "Years of Service", format: false },
-    { icon: Users, value: 40, suffix: "+", label: "Families Helped", format: true },
-    { icon: FolderOpen, value: 25, suffix: "+", label: "Projects Delivered", format: false },
+    { icon: Calendar, value: 20, suffix: "+", label: "Years of Service", format: false },
+    { icon: Users, value: 500, suffix: "+", label: "Families Helped", format: true },
+    { icon: FolderOpen, value: 300, suffix: "+", label: "Projects Delivered", format: false },
     { icon: CheckCircle, value: 100, suffix: "%", label: "Donations to Ground", format: false },
 ];
 

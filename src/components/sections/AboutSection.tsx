@@ -4,9 +4,9 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle } from "lucide-react";
 
 const miniStats = [
-    { value: "24+", label: "Years Active" },
-    { value: "£40K+", label: "Raised" },
-    { value: "25+", label: "Projects" },
+    { value: "20+", label: "Years Active" },
+    { value: "£100K+", label: "Raised" },
+    { value: "300+", label: "Projects" },
 ];
 
 export default function AboutSection() {
