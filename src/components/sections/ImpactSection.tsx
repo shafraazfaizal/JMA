@@ -8,7 +8,7 @@ const stats = [
     {
         icon: PoundSterling,
         prefix: "£",
-        value: 2450000,
+        value: 40000,
         suffix: "+",
         label: "Total Funds Raised",
         format: true,
@@ -17,7 +17,7 @@ const stats = [
     {
         icon: Users,
         prefix: "",
-        value: 12500,
+        value: 40,
         suffix: "+",
         label: "Families Supported",
         format: true,
@@ -26,16 +26,16 @@ const stats = [
     {
         icon: FolderOpen,
         prefix: "",
-        value: 85,
+        value: 25,
         suffix: "+",
-        label: "Active Projects",
+        label: "Projects Delivered",
         format: false,
         duration: 1400,
     },
     {
         icon: Heart,
         prefix: "",
-        value: 650,
+        value: 100,
         suffix: "+",
         label: "Volunteers Worldwide",
         format: false,

@@ -15,8 +15,8 @@ import type { FeaturedMediaItem } from "@/components/sections/MediaShowcase";
 
 const stats = [
     { icon: Calendar, value: 24, suffix: "+", label: "Years of Service", format: false },
-    { icon: Users, value: 3000, suffix: "+", label: "Families Helped", format: true },
-    { icon: FolderOpen, value: 200, suffix: "+", label: "Projects Delivered", format: false },
+    { icon: Users, value: 40, suffix: "+", label: "Families Helped", format: true },
+    { icon: FolderOpen, value: 25, suffix: "+", label: "Projects Delivered", format: false },
     { icon: CheckCircle, value: 100, suffix: "%", label: "Donations to Ground", format: false },
 ];
 

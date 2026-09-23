@@ -5,16 +5,9 @@ import { ArrowRight, CheckCircle } from "lucide-react";
 
 const miniStats = [
     { value: "24+", label: "Years Active" },
-    { value: "£2.4M+", label: "Raised" },
-    { value: "85+", label: "Projects" },
+    { value: "£40K+", label: "Raised" },
+    { value: "25+", label: "Projects" },
 ];
-
-// const valuePills = [
-//     "Full Transparency",
-//     "Diaspora-led",
-//     "UK Registered",
-//     "Grassroots Delivery",
-// ];
 
 export default function AboutSection() {
     return (
