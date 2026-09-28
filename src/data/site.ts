@@ -72,7 +72,13 @@ export const navLinks: NavItem[] = [
       { label: "Khardal Hasana", href: "/khardal-hasana" },
     ],
   },
-  { label: "Project Request", href: "/projects/submit" }
+  {
+    label: "Projects",
+    items: [
+      { label: "Project History", href: "/projects/history" },
+      { label: "Submit a Request", href: "/projects/submit" },
+    ],
+  }
 ];
 
 export const heroStats: StatItem[] = [
