@@ -35,7 +35,7 @@ const fmtGBP = (n: number) =>
 
 const fmtLKR = (n: number) =>
     n > 0
-        ? "Rs " +
+        ? "Rs " +
         new Intl.NumberFormat("en-LK", { maximumFractionDigits: 0 }).format(n)
         : null;
 
@@ -60,7 +60,7 @@ function Badge({ type }: { type: ProjectCategory }) {
     );
 }
 
-// ─── Animated counter ────────────────────────────────────────────────────────
+// ─── Stat Pill ────────────────────────────────────────────────────────────────
 
 function StatPill({
     value,
@@ -95,12 +95,18 @@ function StatPill({
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 export default function ProjectsClient({ yearGroups, stats }: Props) {
-    const [activeYearId, setActiveYearId] = useState<string>(yearGroups[0]?.id ?? "");
+    // Show most recent year first in the tabs
+    const reversedYears = useMemo(() => [...yearGroups].reverse(), [yearGroups]);
+
+    // Default to the most recent year (last item in original array = first in reversed)
+    const [activeYearId, setActiveYearId] = useState<string>(
+        yearGroups[yearGroups.length - 1]?.id ?? ""
+    );
     const [activeFilter, setActiveFilter] = useState<ProjectCategory | "all">("all");
 
-    // Active year group
+    // Active year group — still look up from original array by id
     const activeYear = useMemo(
-        () => yearGroups.find((g) => g.id === activeYearId) ?? yearGroups[0],
+        () => yearGroups.find((g) => g.id === activeYearId) ?? yearGroups[yearGroups.length - 1],
         [yearGroups, activeYearId]
     );
 
@@ -176,10 +182,9 @@ export default function ProjectsClient({ yearGroups, stats }: Props) {
                         position: "relative",
                         maxWidth: "1200px",
                         margin: "0 auto",
-                        padding: "clamp(8rem, 10vw, 6rem) 1.25rem 2.5rem",
+                        padding: "clamp(4rem, 10vw, 7rem) 1.25rem 2.5rem",
                     }}
                 >
-
                     {/* Heading */}
                     <h1
                         style={{
@@ -257,7 +262,7 @@ export default function ProjectsClient({ yearGroups, stats }: Props) {
                 </div>
             </section>
 
-            {/* ── Year Tabs ─────────────────────────────────────────────── */}
+            {/* ── Year Tabs — descending (most recent first) ─────────────── */}
             <div
                 style={{
                     backgroundColor: "#073D47",
@@ -278,7 +283,7 @@ export default function ProjectsClient({ yearGroups, stats }: Props) {
                         minWidth: "max-content",
                     }}
                 >
-                    {yearGroups.map((g) => {
+                    {reversedYears.map((g) => {
                         const isActive = g.id === activeYearId;
                         return (
                             <button
@@ -305,18 +310,16 @@ export default function ProjectsClient({ yearGroups, stats }: Props) {
                                 onMouseEnter={(e) => {
                                     if (!isActive) {
                                         (e.currentTarget as HTMLButtonElement).style.color = "#fff";
-                                        (
-                                            e.currentTarget as HTMLButtonElement
-                                        ).style.background = "rgba(255,255,255,0.07)";
+                                        (e.currentTarget as HTMLButtonElement).style.background =
+                                            "rgba(255,255,255,0.07)";
                                     }
                                 }}
                                 onMouseLeave={(e) => {
                                     if (!isActive) {
                                         (e.currentTarget as HTMLButtonElement).style.color =
                                             "rgba(255,255,255,0.6)";
-                                        (
-                                            e.currentTarget as HTMLButtonElement
-                                        ).style.background = "transparent";
+                                        (e.currentTarget as HTMLButtonElement).style.background =
+                                            "transparent";
                                     }
                                 }}
                             >
@@ -446,7 +449,7 @@ export default function ProjectsClient({ yearGroups, stats }: Props) {
                             overflowX: "auto",
                             WebkitOverflowScrolling: "touch",
                             scrollbarWidth: "none",
-                            paddingBottom: "2px", /* prevent chip shadow clipping */
+                            paddingBottom: "2px",
                         }}
                     >
                         {yearCategories.map((cat) => {
