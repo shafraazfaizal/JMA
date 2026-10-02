@@ -10,7 +10,7 @@ import CampaignsSection from "@/components/sections/CampaignsSection";
 import AboutSection from "@/components/sections/AboutSection";
 import PresidentMessage from "@/components/sections/PresidentMessage";
 import ImpactSection from "@/components/sections/ImpactSection";
-import DonorWall from "@/components/sections/DonorWall";
+// import DonorWall from "@/components/sections/DonorWall";
 import ZakatSection from "@/components/sections/ZakatSection";
 import StoriesSection from "@/components/sections/StoriesSection";
 import NewsEventsSection from "@/components/sections/NewsEventsSection";
@@ -57,7 +57,7 @@ export default async function HomePage() {
                 <AboutSection />
                 <PresidentMessage />
                 <ImpactSection />
-                <DonorWall />
+                {/* <DonorWall /> */}
                 <ZakatSection />
                 <StoriesSection />
                 <NewsEventsSection articles={articles} events={events} />

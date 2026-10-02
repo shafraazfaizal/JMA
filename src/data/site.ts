@@ -143,16 +143,16 @@ export const impactStats: StatItem[] = [
   },
 ];
 
-export const donorWallItems: DonorWallItem[] = [
-  { id: "1", donorName: "Ahmed", location: "London", amount: 50, campaign: "Education Fund", timeAgo: "2 min ago" },
-  { id: "2", donorName: "Fatima", location: "Manchester", amount: 100, campaign: "Masjid Reconstruction", timeAgo: "5 min ago" },
-  { id: "3", donorName: "Ibrahim", location: "Birmingham", amount: 25, campaign: "Orphan Support", timeAgo: "8 min ago" },
-  { id: "4", donorName: "Amina", location: "Leicester", amount: 250, campaign: "General Fund", timeAgo: "12 min ago" },
-  { id: "5", donorName: "Yusuf", location: "Coventry", amount: 50, campaign: "Education Fund", timeAgo: "15 min ago" },
-  { id: "6", donorName: "Khadijah", location: "Glasgow", amount: 75, campaign: "Healthcare Project", timeAgo: "19 min ago" },
-  { id: "7", donorName: "Omar", location: "Sheffield", amount: 100, campaign: "Masjid Reconstruction", timeAgo: "24 min ago" },
-  { id: "8", donorName: "Zainab", location: "Bristol", amount: 30, campaign: "Welfare Fund", timeAgo: "28 min ago" },
-];
+// export const donorWallItems: DonorWallItem[] = [
+//   { id: "1", donorName: "Ahmed", location: "London", amount: 50, campaign: "Education Fund", timeAgo: "2 min ago" },
+//   { id: "2", donorName: "Fatima", location: "Manchester", amount: 100, campaign: "Masjid Reconstruction", timeAgo: "5 min ago" },
+//   { id: "3", donorName: "Ibrahim", location: "Birmingham", amount: 25, campaign: "Orphan Support", timeAgo: "8 min ago" },
+//   { id: "4", donorName: "Amina", location: "Leicester", amount: 250, campaign: "General Fund", timeAgo: "12 min ago" },
+//   { id: "5", donorName: "Yusuf", location: "Coventry", amount: 50, campaign: "Education Fund", timeAgo: "15 min ago" },
+//   { id: "6", donorName: "Khadijah", location: "Glasgow", amount: 75, campaign: "Healthcare Project", timeAgo: "19 min ago" },
+//   { id: "7", donorName: "Omar", location: "Sheffield", amount: 100, campaign: "Masjid Reconstruction", timeAgo: "24 min ago" },
+//   { id: "8", donorName: "Zainab", location: "Bristol", amount: 30, campaign: "Welfare Fund", timeAgo: "28 min ago" },
+// ];
 
 export const donationAmounts = [10, 25, 50, 100, 250, 500];
 
