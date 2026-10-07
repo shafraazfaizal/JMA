@@ -2,6 +2,12 @@
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import type { DBShowcaseSubmission, ShowcaseCategory, ShowcaseStatus } from "@/types/database";
 
+// What the public showcase page receives: no parent details or admin fields
+export type PublicShowcaseSubmission = Omit<
+    DBShowcaseSubmission,
+    "parent_email" | "parent_name" | "consent_publish" | "admin_note" | "updated_at"
+>;
+
 export interface ShowcaseInput {
     child_name: string;
     age_group: DBShowcaseSubmission["age_group"];
@@ -29,11 +35,11 @@ export async function getAllShowcaseSubmissions(): Promise<DBShowcaseSubmission[
 
 export async function getPublishedShowcaseSubmissions(
     category?: ShowcaseCategory
-): Promise<DBShowcaseSubmission[]> {
+): Promise<PublicShowcaseSubmission[]> {
     const supabase = await createClient();
     let query = supabase
         .from("student_showcase_submissions")
-        .select("*")
+        .select("id, child_name, age_group, category, title, description, file_url, file_type, show_name, status, published_at, created_at")
         .eq("status", "published")
         .order("published_at", { ascending: false });
 

@@ -4,7 +4,8 @@
 import { useState, useTransition, useRef, useCallback } from "react";
 import { PenLine, Palette, Mic2, BookOpen, GraduationCap, Dumbbell, Upload, CheckCircle, AlertCircle, Star } from "lucide-react";
 import { createBrowserClient } from "@supabase/ssr";
-import type { DBShowcaseSubmission, ShowcaseCategory } from "@/types/database";
+import type { ShowcaseCategory } from "@/types/database";
+import type { PublicShowcaseSubmission } from "@/lib/admin/showcase";
 import { submitShowcaseAction } from "@/app/community/showcase/actions";
 
 const CATEGORIES: { value: ShowcaseCategory; label: string; icon: typeof PenLine; colour: string; description: string }[] = [
@@ -28,7 +29,7 @@ const emptyForm = {
     file_url: "", consent_publish: false, show_name: true,
 };
 
-export default function ShowcaseClient({ submissions }: { submissions: DBShowcaseSubmission[] }) {
+export default function ShowcaseClient({ submissions }: { submissions: PublicShowcaseSubmission[] }) {
     const [filter, setFilter] = useState<Filter>("All");
     const [showForm, setShowForm] = useState(false);
     const [form, setForm] = useState(emptyForm);

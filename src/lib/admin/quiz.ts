@@ -1,5 +1,5 @@
 // src/lib/admin/quiz.ts
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import type { DBQuizRegistration, DBQuizSession, AgeGroup } from "@/types/database";
 
 // ── Sessions ─────────────────────────────────────────────────
@@ -93,7 +93,7 @@ export async function createQuizRegistration(input: {
     parent_phone?: string;
     quiz_month: string;
 }): Promise<DBQuizRegistration> {
-    const supabase = await createClient();
+    const supabase = await createServiceClient();
     const { data, error } = await supabase
         .from("quiz_registrations")
         .insert({ ...input, status: "registered", link_sent: false })
