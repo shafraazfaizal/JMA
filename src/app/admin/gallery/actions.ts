@@ -16,7 +16,7 @@ import {
 
 // ============================================
 // Create album — photo type (with 1+ photo URLs already uploaded)
-// or video type (YouTube URL, thumbnail auto-fetched)
+// or video type (YouTube URL, thumbnail auto-fetched or custom)
 // ============================================
 
 export async function createPhotoAlbumAction(input: {
@@ -59,6 +59,7 @@ export async function createVideoAlbumAction(input: {
     category: AlbumInput["category"];
     album_date: string;
     youtubeUrlRaw: string;
+    customThumbnailUrl?: string;
 }) {
     const videoId = extractYouTubeId(input.youtubeUrlRaw);
     if (!videoId) {
@@ -73,7 +74,7 @@ export async function createVideoAlbumAction(input: {
         media_type: "video",
         cover_image_url: null,
         youtube_url: videoId,
-        youtube_thumbnail_url: getYouTubeThumbnail(videoId, "max"),
+        youtube_thumbnail_url: input.customThumbnailUrl ?? getYouTubeThumbnail(videoId, "max"),
         display_order: 0,
     };
 
@@ -97,7 +98,7 @@ export async function updateAlbumDetailsAction(
     revalidatePath("/admin/gallery");
 }
 
-export async function updateAlbumVideoAction(id: string, youtubeUrlRaw: string) {
+export async function updateAlbumVideoAction(id: string, youtubeUrlRaw: string, customThumbnailUrl?: string) {
     const videoId = extractYouTubeId(youtubeUrlRaw);
     if (!videoId) {
         return { success: false, error: "Couldn't recognise that as a YouTube link." };
@@ -105,7 +106,7 @@ export async function updateAlbumVideoAction(id: string, youtubeUrlRaw: string) 
 
     await updateAlbum(id, {
         youtube_url: videoId,
-        youtube_thumbnail_url: getYouTubeThumbnail(videoId, "max"),
+        youtube_thumbnail_url: customThumbnailUrl ?? getYouTubeThumbnail(videoId, "max"),
     });
 
     revalidatePath("/gallery");

@@ -28,6 +28,9 @@ export default function GalleryAlbumForm() {
 
     // Video mode
     const [youtubeInput, setYoutubeInput] = useState("");
+    const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+    const [uploadingThumb, setUploadingThumb] = useState(false);
 
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
@@ -50,6 +53,24 @@ export default function GalleryAlbumForm() {
         } finally {
             setUploading(false);
             e.target.value = ""; // allow re-selecting the same file
+        }
+    };
+
+    const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setThumbnailPreview(URL.createObjectURL(file));
+        setUploadingThumb(true);
+        setError("");
+        try {
+            const url = await uploadMedia(file, "gallery");
+            setThumbnailUrl(url);
+        } catch {
+            setError("Thumbnail upload failed. Please try again.");
+            setThumbnailPreview(null);
+        } finally {
+            setUploadingThumb(false);
+            e.target.value = "";
         }
     };
 
@@ -86,7 +107,9 @@ export default function GalleryAlbumForm() {
                 return;
             }
             const result = await createVideoAlbumAction({
-                title, caption, category, album_date: albumDate, youtubeUrlRaw: youtubeInput,
+                title, caption, category, album_date: albumDate,
+                youtubeUrlRaw: youtubeInput,
+                customThumbnailUrl: thumbnailUrl ?? undefined,
             });
             if (result && !result.success) {
                 setError(result.error || "Something went wrong.");
@@ -214,33 +237,70 @@ export default function GalleryAlbumForm() {
                 </div>
             )}
 
-            {/* ── Video mode: YouTube URL ── */}
+            {/* ── Video mode: YouTube URL + custom thumbnail ── */}
             {mediaType === "video" && (
-                <div>
-                    <AdminFieldLabel required>YouTube Link</AdminFieldLabel>
-                    <input
-                        type="text"
-                        value={youtubeInput}
-                        onChange={(e) => setYoutubeInput(e.target.value)}
-                        placeholder="https://youtube.com/watch?v=... or just the video ID"
-                        style={adminInputStyle()}
-                        onFocus={onFocusBorder}
-                        onBlur={onBlurBorder}
-                    />
-                    <AdminFieldHint>Paste any YouTube link — full URL, shortened youtu.be link, or just the video ID.</AdminFieldHint>
+                <div style={{ display: "flex", flexDirection: "column" as const, gap: "1.25rem" }}>
 
-                    {previewVideoId && (
-                        <div style={{ marginTop: "0.875rem", borderRadius: "0.75rem", overflow: "hidden", border: "1.5px solid #E5E7EB", maxWidth: "320px" }}>
+                    {/* YouTube URL */}
+                    <div>
+                        <AdminFieldLabel required>YouTube Link</AdminFieldLabel>
+                        <input
+                            type="text"
+                            value={youtubeInput}
+                            onChange={(e) => setYoutubeInput(e.target.value)}
+                            placeholder="https://youtube.com/watch?v=... or just the video ID"
+                            style={adminInputStyle()}
+                            onFocus={onFocusBorder}
+                            onBlur={onBlurBorder}
+                        />
+                        <AdminFieldHint>Paste any YouTube link — full URL, shortened youtu.be link, or just the video ID.</AdminFieldHint>
+                    </div>
+
+                    {/* Custom thumbnail upload */}
+                    <div>
+                        <AdminFieldLabel>Custom Thumbnail</AdminFieldLabel>
+                        <AdminFieldHint>Upload your own thumbnail for best results — the auto-fetched YouTube one is used as fallback.</AdminFieldHint>
+
+                        {thumbnailPreview ? (
+                            <div style={{ marginTop: "0.75rem", borderRadius: "0.75rem", overflow: "hidden", border: "1.5px solid #E5E7EB", maxWidth: "320px" }}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={thumbnailPreview} alt="Thumbnail preview" style={{ width: "100%", display: "block" }} />
+                                <div style={{ padding: "0.5rem 0.875rem", backgroundColor: "#F9FAFB", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", color: uploadingThumb ? "#0D5C6B" : "#6B7280" }}>
+                                        {uploadingThumb ? "Uploading…" : "✓ Thumbnail ready"}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setThumbnailPreview(null); setThumbnailUrl(null); }}
+                                        style={{ background: "none", border: "none", cursor: "pointer", color: "#EF4444", fontFamily: "var(--font-inter)", fontSize: "0.75rem", padding: 0 }}
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <label style={{ marginTop: "0.75rem", display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", gap: "0.5rem", height: "100px", borderRadius: "0.75rem", border: "2px dashed #D1D5DB", backgroundColor: "#F9FAFB", cursor: "pointer" }}>
+                                <Upload size={18} style={{ color: "#9CA3AF" }} aria-hidden="true" />
+                                <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#6B7280" }}>Click to upload thumbnail</span>
+                                <input type="file" accept="image/*" onChange={handleThumbnailUpload} style={{ display: "none" }} />
+                            </label>
+                        )}
+                    </div>
+
+                    {/* YouTube auto-preview fallback */}
+                    {previewVideoId && !thumbnailPreview && (
+                        <div style={{ borderRadius: "0.75rem", overflow: "hidden", border: "1.5px solid #E5E7EB", maxWidth: "320px" }}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={getYouTubeThumbnail(previewVideoId, "max")} alt="YouTube thumbnail preview" style={{ width: "100%", display: "block" }} />
                             <div style={{ padding: "0.625rem 0.875rem", backgroundColor: "#F9FAFB", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                                 <Video size={14} style={{ color: "#DC2626" }} aria-hidden="true" />
-                                <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", color: "#6B7280" }}>Thumbnail auto-fetched from YouTube</span>
+                                <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", color: "#6B7280" }}>Auto-fetched from YouTube (upload above to override)</span>
                             </div>
                         </div>
                     )}
+
                     {youtubeInput && !previewVideoId && (
-                        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#EF4444", marginTop: "0.5rem" }}>
+                        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#EF4444" }}>
                             That doesn&apos;t look like a valid YouTube link yet.
                         </p>
                     )}
@@ -265,13 +325,13 @@ export default function GalleryAlbumForm() {
                 <button
                     type="button"
                     onClick={handleSubmit}
-                    disabled={submitting || uploading}
+                    disabled={submitting || uploading || uploadingThumb}
                     style={{
                         flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem",
                         padding: "0.8125rem 1.5rem", borderRadius: "0.5rem", border: "none",
                         backgroundColor: submitting ? "#094955" : "#0D5C6B", color: "#ffffff",
                         fontFamily: "var(--font-jakarta)", fontWeight: 700, fontSize: "0.9375rem",
-                        cursor: submitting || uploading ? "not-allowed" : "pointer", transition: "background-color 0.2s ease",
+                        cursor: submitting || uploading || uploadingThumb ? "not-allowed" : "pointer", transition: "background-color 0.2s ease",
                     }}
                 >
                     {submitting ? "Publishing…" : (<><Save size={16} aria-hidden="true" /> Publish Album</>)}

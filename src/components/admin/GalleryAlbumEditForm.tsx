@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, X, Loader2, Save, Star, Video, AlertCircle, CheckCircle } from "lucide-react";
+import { Upload, Plus, X, Loader2, Save, Star, Video, AlertCircle, CheckCircle } from "lucide-react";
 import { uploadMedia } from "@/lib/supabase/storage";
 import {
     updateAlbumDetailsAction,
@@ -41,6 +41,12 @@ export default function GalleryAlbumEditForm({ album }: { album: GalleryAlbumWit
     const [videoError, setVideoError] = useState("");
     const [videoSaved, setVideoSaved] = useState(false);
 
+    // Custom thumbnail state
+    const [customThumbPreview, setCustomThumbPreview] = useState<string | null>(null);
+    const [uploadingThumb, setUploadingThumb] = useState(false);
+    const [thumbError, setThumbError] = useState("");
+    const [thumbSaved, setThumbSaved] = useState(false);
+
     const handleSaveDetails = async () => {
         setSavingDetails(true);
         await updateAlbumDetailsAction(album.id, { title, caption, category, album_date: albumDate });
@@ -60,6 +66,31 @@ export default function GalleryAlbumEditForm({ album }: { album: GalleryAlbumWit
         }
         setVideoSaved(true);
         setTimeout(() => setVideoSaved(false), 1500);
+    };
+
+    const handleThumbUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setCustomThumbPreview(URL.createObjectURL(file));
+        setUploadingThumb(true);
+        setThumbError("");
+        try {
+            const url = await uploadMedia(file, "gallery");
+            const result = await updateAlbumVideoAction(album.id, youtubeInput, url);
+            if (!result.success) {
+                setThumbError(result.error || "Failed to save thumbnail.");
+                setCustomThumbPreview(null);
+                return;
+            }
+            setThumbSaved(true);
+            setTimeout(() => setThumbSaved(false), 1500);
+        } catch {
+            setThumbError("Thumbnail upload failed. Please try again.");
+            setCustomThumbPreview(null);
+        } finally {
+            setUploadingThumb(false);
+            e.target.value = "";
+        }
     };
 
     const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -219,57 +250,105 @@ export default function GalleryAlbumEditForm({ album }: { album: GalleryAlbumWit
                 </div>
             )}
 
-            {/* ── Video album: update YouTube link ── */}
+            {/* ── Video album: update YouTube link + custom thumbnail ── */}
             {album.media_type === "video" && (
-                <div>
-                    <AdminFieldLabel required>YouTube Link</AdminFieldLabel>
-                    <input
-                        type="text"
-                        value={youtubeInput}
-                        onChange={(e) => { setYoutubeInput(e.target.value); setVideoError(""); }}
-                        placeholder="https://youtube.com/watch?v=..."
-                        style={adminInputStyle()}
-                        onFocus={onFocusBorder}
-                        onBlur={onBlurBorder}
-                    />
+                <div style={{ display: "flex", flexDirection: "column" as const, gap: "1.25rem" }}>
 
-                    {album.youtube_thumbnail_url && (
-                        <div style={{ marginTop: "0.875rem", borderRadius: "0.75rem", overflow: "hidden", border: "1.5px solid #E5E7EB", maxWidth: "320px" }}>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={album.youtube_thumbnail_url} alt="Current YouTube thumbnail" style={{ width: "100%", display: "block" }} />
-                            <a
-                                href={album.youtube_url ? getYouTubeWatchUrl(album.youtube_url) : "#"}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{ padding: "0.625rem 0.875rem", backgroundColor: "#F9FAFB", display: "flex", alignItems: "center", gap: "0.5rem", textDecoration: "none" }}
-                            >
-                                <Video size={14} style={{ color: "#DC2626" }} aria-hidden="true" />
-                                <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", color: "#6B7280" }}>Current video — click to preview</span>
-                            </a>
-                        </div>
-                    )}
+                    {/* YouTube URL */}
+                    <div>
+                        <AdminFieldLabel required>YouTube Link</AdminFieldLabel>
+                        <input
+                            type="text"
+                            value={youtubeInput}
+                            onChange={(e) => { setYoutubeInput(e.target.value); setVideoError(""); }}
+                            placeholder="https://youtube.com/watch?v=..."
+                            style={adminInputStyle()}
+                            onFocus={onFocusBorder}
+                            onBlur={onBlurBorder}
+                        />
 
-                    {videoError && (
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", marginTop: "0.625rem" }}>
-                            <AlertCircle size={13} style={{ color: "#EF4444" }} aria-hidden="true" />
-                            <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#EF4444" }}>{videoError}</p>
-                        </div>
-                    )}
+                        {album.youtube_thumbnail_url && !customThumbPreview && (
+                            <div style={{ marginTop: "0.875rem", borderRadius: "0.75rem", overflow: "hidden", border: "1.5px solid #E5E7EB", maxWidth: "320px" }}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={album.youtube_thumbnail_url} alt="Current YouTube thumbnail" style={{ width: "100%", display: "block" }} />
+                                <a
+                                    href={album.youtube_url ? getYouTubeWatchUrl(album.youtube_url) : "#"}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ padding: "0.625rem 0.875rem", backgroundColor: "#F9FAFB", display: "flex", alignItems: "center", gap: "0.5rem", textDecoration: "none" }}
+                                >
+                                    <Video size={14} style={{ color: "#DC2626" }} aria-hidden="true" />
+                                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", color: "#6B7280" }}>Current video — click to preview</span>
+                                </a>
+                            </div>
+                        )}
 
-                    <button
-                        onClick={handleSaveVideo}
-                        disabled={savingVideo}
-                        style={{
-                            marginTop: "0.875rem", display: "flex", alignItems: "center", gap: "0.5rem",
-                            padding: "0.625rem 1.125rem", borderRadius: "0.5rem", border: "none",
-                            backgroundColor: videoSaved ? "#15803D" : "#0D5C6B", color: "#ffffff",
-                            fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.8125rem",
-                            cursor: savingVideo ? "not-allowed" : "pointer", transition: "background-color 0.2s ease",
-                        }}
-                    >
-                        {videoSaved ? <CheckCircle size={14} aria-hidden="true" /> : <Save size={14} aria-hidden="true" />}
-                        {videoSaved ? "Updated!" : savingVideo ? "Updating…" : "Update Video"}
-                    </button>
+                        {videoError && (
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", marginTop: "0.625rem" }}>
+                                <AlertCircle size={13} style={{ color: "#EF4444" }} aria-hidden="true" />
+                                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#EF4444" }}>{videoError}</p>
+                            </div>
+                        )}
+
+                        <button
+                            onClick={handleSaveVideo}
+                            disabled={savingVideo}
+                            style={{
+                                marginTop: "0.875rem", display: "flex", alignItems: "center", gap: "0.5rem",
+                                padding: "0.625rem 1.125rem", borderRadius: "0.5rem", border: "none",
+                                backgroundColor: videoSaved ? "#15803D" : "#0D5C6B", color: "#ffffff",
+                                fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.8125rem",
+                                cursor: savingVideo ? "not-allowed" : "pointer", transition: "background-color 0.2s ease",
+                            }}
+                        >
+                            {videoSaved ? <CheckCircle size={14} aria-hidden="true" /> : <Save size={14} aria-hidden="true" />}
+                            {videoSaved ? "Updated!" : savingVideo ? "Updating…" : "Update Video"}
+                        </button>
+                    </div>
+
+                    {/* Custom thumbnail upload */}
+                    <div>
+                        <AdminFieldLabel>Replace Thumbnail</AdminFieldLabel>
+                        <AdminFieldHint>Upload a custom thumbnail image to replace the current one.</AdminFieldHint>
+
+                        {customThumbPreview ? (
+                            <div style={{ marginTop: "0.75rem", borderRadius: "0.75rem", overflow: "hidden", border: "1.5px solid #E5E7EB", maxWidth: "320px" }}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={customThumbPreview} alt="New thumbnail preview" style={{ width: "100%", display: "block" }} />
+                                <div style={{ padding: "0.5rem 0.875rem", backgroundColor: "#F9FAFB", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", color: uploadingThumb ? "#0D5C6B" : thumbSaved ? "#15803D" : "#6B7280" }}>
+                                        {uploadingThumb ? "Uploading…" : thumbSaved ? "✓ Thumbnail saved!" : "Thumbnail uploaded"}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setCustomThumbPreview(null)}
+                                        style={{ background: "none", border: "none", cursor: "pointer", color: "#EF4444", fontFamily: "var(--font-inter)", fontSize: "0.75rem", padding: 0 }}
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <label style={{ marginTop: "0.75rem", display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", gap: "0.5rem", height: "90px", borderRadius: "0.75rem", border: "2px dashed #D1D5DB", backgroundColor: "#F9FAFB", cursor: "pointer" }}>
+                                {uploadingThumb ? (
+                                    <Loader2 size={18} className="animate-spin" style={{ color: "#0D5C6B" }} aria-hidden="true" />
+                                ) : (
+                                    <Upload size={18} style={{ color: "#9CA3AF" }} aria-hidden="true" />
+                                )}
+                                <span style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#6B7280" }}>
+                                    {uploadingThumb ? "Uploading…" : "Click to upload custom thumbnail"}
+                                </span>
+                                <input type="file" accept="image/*" onChange={handleThumbUpload} style={{ display: "none" }} disabled={uploadingThumb} />
+                            </label>
+                        )}
+
+                        {thumbError && (
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", marginTop: "0.5rem" }}>
+                                <AlertCircle size={13} style={{ color: "#EF4444" }} aria-hidden="true" />
+                                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.8125rem", color: "#EF4444" }}>{thumbError}</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
 
