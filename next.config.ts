@@ -29,7 +29,5 @@ export default withPWA({
   disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
-  navigateFallback: null,
-  navigateFallbackDenylist: [/^\/admin/, /^\/api/],
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 })(nextConfig as any);
