@@ -22,6 +22,19 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "10mb",
     },
   },
+  async headers() {
+    return [
+      {
+        source: "/sw.js",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-cache, no-store, must-revalidate",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default withPWA({
@@ -29,5 +42,7 @@ export default withPWA({
   disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
+  navigateFallback: null,
+  navigateFallbackDenylist: [/^\/admin/, /^\/api/],
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 })(nextConfig as any);
