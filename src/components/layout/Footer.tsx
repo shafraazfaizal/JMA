@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import { siteConfig } from "@/data/site";
 
@@ -61,6 +62,115 @@ const socialLinks = [
     hoverColour: "#25D366",
   },
 ];
+
+function BankDetails() {
+  const [copied, setCopied] = useState(false);
+
+  const rows = [
+    { label: "Bank", value: siteConfig.bankDetails.bank },
+    { label: "Account Name", value: siteConfig.bankDetails.accountName },
+    { label: "Sort Code", value: siteConfig.bankDetails.sortCode },
+    { label: "Account No.", value: siteConfig.bankDetails.accountNumber },
+  ];
+
+  const handleCopy = async () => {
+    const text = rows.map(({ label, value }) => `${label}: ${value}`).join("\n");
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const el = document.createElement("textarea");
+      el.value = text;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+        <h3 style={{
+          fontFamily: "var(--font-inter)",
+          fontWeight: 600,
+          fontSize: "0.75rem",
+          letterSpacing: "0.08em",
+          textTransform: "uppercase" as const,
+          color: "rgba(255,255,255,0.45)",
+          margin: 0,
+        }}>
+          Direct Bank Transfer
+        </h3>
+
+        <button
+          onClick={handleCopy}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.35rem",
+            background: copied ? "rgba(201,168,76,0.15)" : "rgba(255,255,255,0.07)",
+            border: `1px solid ${copied ? "rgba(201,168,76,0.4)" : "rgba(255,255,255,0.12)"}`,
+            borderRadius: "0.4rem",
+            padding: "0.25rem 0.6rem",
+            cursor: "pointer",
+            color: copied ? "#C9A84C" : "rgba(255,255,255,0.5)",
+            fontSize: "0.7rem",
+            fontWeight: 500,
+            letterSpacing: "0.03em",
+            transition: "all 0.15s ease",
+            whiteSpace: "nowrap" as const,
+          }}
+          onMouseEnter={(e) => {
+            if (!copied) {
+              const b = e.currentTarget as HTMLButtonElement;
+              b.style.background = "rgba(255,255,255,0.12)";
+              b.style.color = "rgba(255,255,255,0.8)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!copied) {
+              const b = e.currentTarget as HTMLButtonElement;
+              b.style.background = "rgba(255,255,255,0.07)";
+              b.style.color = "rgba(255,255,255,0.5)";
+            }
+          }}
+        >
+          {copied ? (
+            <>
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8.5L6.5 12L13 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Copied!
+            </>
+          ) : (
+            <>
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
+                <rect x="5" y="5" width="8" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2H3.5A1.5 1.5 0 0 0 2 3.5v7A1.5 1.5 0 0 0 3.5 12H5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+              Copy all
+            </>
+          )}
+        </button>
+      </div>
+
+      <div style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0.75rem", padding: "1.25rem" }}>
+        {rows.map(({ label, value }) => (
+          <div key={label} style={{ marginBottom: "0.625rem" }}>
+            <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.4)", marginBottom: "0.125rem", textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>
+              {label}
+            </div>
+            <div style={{ fontSize: "0.875rem", color: "#ffffff", fontWeight: 500 }}>
+              {value}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Footer() {
   return (
@@ -186,28 +296,7 @@ export default function Footer() {
           ))}
 
           {/* Bank transfer box */}
-          <div>
-            <h3 style={{ fontFamily: "var(--font-inter)", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "rgba(255,255,255,0.45)", marginBottom: "1rem" }}>
-              Direct Bank Transfer
-            </h3>
-            <div style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0.75rem", padding: "1.25rem" }}>
-              {[
-                { label: "Bank", value: siteConfig.bankDetails.bank },
-                { label: "Account Name", value: siteConfig.bankDetails.accountName },
-                { label: "Sort Code", value: siteConfig.bankDetails.sortCode },
-                { label: "Account No.", value: siteConfig.bankDetails.accountNumber },
-              ].map(({ label, value }) => (
-                <div key={label} style={{ marginBottom: "0.625rem" }}>
-                  <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.4)", marginBottom: "0.125rem", textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>
-                    {label}
-                  </div>
-                  <div style={{ fontSize: "0.875rem", color: "#ffffff", fontWeight: 500 }}>
-                    {value}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <BankDetails />
         </div>
       </div>
 
