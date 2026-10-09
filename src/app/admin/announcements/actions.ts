@@ -7,9 +7,18 @@ import {
     deleteAnnouncement,
     type AnnouncementInput,
 } from "@/lib/admin/announcements";
+import { sendPushToAll } from "@/lib/push/send-push";
 
 export async function createAnnouncementAction(input: AnnouncementInput) {
     await createAnnouncement(input);
+
+    // Notify all push subscribers of the new announcement
+    await sendPushToAll({
+        title: "JMA UK — New Announcement",
+        body: input.message.slice(0, 100),
+        url: "/",
+    });
+
     revalidatePath("/");
     revalidatePath("/admin/announcements");
 }

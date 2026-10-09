@@ -9,6 +9,7 @@ import {
     slugify,
     type CampaignInput,
 } from "@/lib/admin/campaigns";
+import { sendPushToAll } from "@/lib/push/send-push";
 
 export async function createCampaignAction(formData: FormData) {
     const title = formData.get("title") as string;
@@ -30,6 +31,13 @@ export async function createCampaignAction(formData: FormData) {
     };
 
     await createCampaign(input);
+
+    // Notify all push subscribers of the new campaign
+    await sendPushToAll({
+        title: "JMA UK — New Campaign",
+        body: input.title,
+        url: `/campaigns/${input.slug}`,
+    });
 
     // Refresh cached data on every page that shows campaigns
     revalidatePath("/campaigns");

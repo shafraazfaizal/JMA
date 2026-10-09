@@ -10,6 +10,7 @@ import {
     type EventInput,
 } from "@/lib/admin/events";
 import { slugify } from "@/lib/admin/events-utils";
+import { sendPushToAll } from "@/lib/push/send-push";
 
 export async function createEventAction(formData: FormData) {
     const title = formData.get("title") as string;
@@ -26,6 +27,13 @@ export async function createEventAction(formData: FormData) {
     };
 
     await createEvent(input);
+
+    // Notify all push subscribers of the new event
+    await sendPushToAll({
+        title: "JMA UK — Upcoming Event",
+        body: input.title,
+        url: "/events",
+    });
 
     revalidatePath("/events");
     revalidatePath("/");

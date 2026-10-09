@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "build": "next build --webpack && node scripts/add-push-handler.js",
     "start": "next start",
     "lint": "eslint"
   },
@@ -24,7 +24,8 @@
     "react-image-crop": "^11.1.2",
     "react-signature-canvas": "^1.1.0-alpha.2",
     "resend": "^6.14.0",
-    "stripe": "^22.2.1"
+    "stripe": "^22.2.1",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -32,6 +33,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-signature-canvas": "^1.0.7",
+    "@types/web-push": "^3.6.4",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",

@@ -9,6 +9,7 @@ import {
     type BlogPostInput,
 } from "@/lib/admin/blog";
 import { slugify } from "@/lib/admin/blog-utils";
+import { sendPushToAll } from "@/lib/push/send-push";
 
 export async function createBlogPostAction(formData: FormData) {
     const title = formData.get("title") as string;
@@ -27,6 +28,13 @@ export async function createBlogPostAction(formData: FormData) {
     };
 
     await createBlogPost(input);
+
+    // Notify all push subscribers of the new blog post
+    await sendPushToAll({
+        title: "JMA UK — New Article",
+        body: input.title,
+        url: `/blog/${input.slug}`,
+    });
 
     revalidatePath("/blog");
     revalidatePath("/");
