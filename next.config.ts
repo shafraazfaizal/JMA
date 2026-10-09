@@ -22,19 +22,6 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "10mb",
     },
   },
-  async headers() {
-    return [
-      {
-        source: "/sw.js",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "no-cache, no-store, must-revalidate",
-          },
-        ],
-      },
-    ];
-  },
 };
 
 export default withPWA({
@@ -44,5 +31,6 @@ export default withPWA({
   skipWaiting: true,
   navigateFallback: null,
   navigateFallbackDenylist: [/^\/admin/, /^\/api/],
+  importScripts: ["/custom-sw.js"],
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 })(nextConfig as any);
