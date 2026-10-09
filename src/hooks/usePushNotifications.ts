@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { subscribeToPushAction, unsubscribeFromPushAction } from "@/app/actions/push-subscribe";
 
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
+const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "";
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -37,6 +37,10 @@ export function usePushNotifications() {
 
     const subscribe = useCallback(async (): Promise<boolean> => {
         if (!("serviceWorker" in navigator)) return false;
+        if (!VAPID_PUBLIC_KEY) {
+            console.error("[usePushNotifications] VAPID public key is missing");
+            return false;
+        }
         setLoading(true);
         try {
             const reg = await navigator.serviceWorker.ready;
@@ -49,7 +53,7 @@ export function usePushNotifications() {
             // Subscribe via push manager
             const sub = await reg.pushManager.subscribe({
                 userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!) as unknown as BufferSource,
+                applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) as unknown as BufferSource,
             });
 
             const json = sub.toJSON() as {
