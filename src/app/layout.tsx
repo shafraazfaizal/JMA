@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import PublicChrome from "@/components/layout/PublicChrome";
 import PWAInstallBanner from "@/components/pwa/PWAInstallBanner";
+import RegisterSW from "@/components/pwa/RegisterSW";
 import PushPrompt from "@/components/ui/PushPrompt";
 
 export const metadata: Metadata = {
@@ -71,6 +72,7 @@ export default function RootLayout({
       <body style={{ fontFamily: "var(--font-inter)", margin: 0 }}>
         <PublicChrome>{children}</PublicChrome>
         <PWAInstallBanner />
+        <RegisterSW />
         <PushPrompt />
       </body>
     </html>
